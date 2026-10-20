@@ -1,0 +1,38 @@
+
+
+.MainContainer {
+
+  background-color: var(--background);
+
+  font-family: var(--text-font);
+  
+  color: var(--generaltext-color);
+  
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+
+  width: 100vw;
+  height: auto;
+
+
+  margin: 0;
+  padding: 0;
+
+  position: relative;
+
+
+
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+  -ms-overflow-style: none;  
+  scrollbar-width: none; 
+
+  
+
+}
+
+

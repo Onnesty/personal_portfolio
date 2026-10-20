@@ -1,0 +1,335 @@
+
+
+.MainContainer {
+
+    width: 100%;
+    height: 100vh;
+
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+
+    background-color: var(--background);
+
+    border-bottom: 1px solid var(--border-2);
+
+    position: relative;
+
+    gap: 1%;
+
+}
+
+
+.Title {
+
+    width: 100%;
+    height: 10%;
+
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+
+    font-weight: bolder;
+    font-size: clamp(26px, 4vw, 64px);
+    font-family: var(--title-font);
+    
+    opacity: 0;
+}
+
+
+
+.Fade {
+
+    height: 100%;
+    width: 5rem;
+
+    z-index: 10;
+    pointer-events: none;
+
+    position: absolute;
+
+}
+
+.CarouselButton {
+    position: absolute;
+
+    z-index: 20;
+
+    height: 7%;
+    aspect-ratio: 1/1;
+
+    align-self: center;
+
+    cursor: pointer;
+}
+
+
+
+.Track {
+
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+
+
+    width: max-content;
+    height: 60%;
+
+    position: relative;
+
+
+    opacity: 0%;
+    transform: translateY(-20%);
+
+
+    transition: all 0.8s ease-in-out;
+
+    
+
+
+}
+.Track.Show {
+
+    opacity: 100%;
+    transform: translateY(0%);
+
+    
+
+    
+}
+
+.ContentContainer {
+
+    width: 100vw;
+    height: 100%;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    
+    transition: all 0.8s ease-in-out;
+
+
+}
+
+
+.CardContainer {
+    
+    
+
+    aspect-ratio: 1.5/1;
+
+    height: 90%;
+
+    cursor: pointer;
+
+    position: relative;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background-color: var(--background-2);
+
+    padding: 20px;
+
+    gap: 5%;
+
+    border: solid 1px var(--border);
+    border-radius: 40px;
+
+    box-shadow: 0px 0px 15px  rgb(0,0,0, 0.5);
+
+    transform: translateY(0%);
+
+    transition: all 0.2s linear;
+
+    
+}
+.CardContainer:hover {
+    transform: translateY(-2%);
+    background-color: var(--background-3);
+}
+
+.InformationContainer {
+    
+    width: 50%;
+
+    height: 100%;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+
+
+}
+
+.ProjectImage {
+
+    height: 100%;
+    width: 100%;
+    border-radius: 20px;
+}
+
+.ProjectTitle {
+    font-size: clamp(24px, 1vw, 40px);
+    font-family: var(--title-font);
+    font-weight: bolder;
+}
+
+.TechnologiesContainer {
+    
+    width: 100%;
+    height: 10%;
+
+    min-height: 50px;
+
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+
+    gap: 10%;
+
+    padding-left: 3%;
+
+    overflow-x: auto;
+    overflow-y: hidden;
+
+     cursor: grab;
+
+
+}
+.TechnologiesContainer::-webkit-scrollbar {
+    
+    background-color: transparent;
+
+    height: 10px;
+
+   
+
+}
+
+.TechnologiesContainer::-webkit-scrollbar-thumb {
+    
+    background-color: var(--background-4);
+    border-radius: 20px;
+
+    
+}
+.Technology {
+
+    height: 100%;
+    width: auto;
+    
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 10%;
+
+}
+.TechnologyImage {
+    
+    height: 50%;
+    aspect-ratio: 1/1;
+
+}
+
+.TechnologyName {
+    font-size: clamp(10px, .8vw, 24px);
+
+}
+
+.ProjectDecription {
+
+    font-size: clamp(14px, .9vw, 24px);
+
+    text-align: justify;
+    font-weight: 400;
+
+    line-height: 1.5;
+
+}
+
+.LinkButton {
+    
+    padding: 10px;
+    
+    padding-left: 20px;
+    padding-right: 20px;
+
+    border-radius: 20px;
+    border: solid 1px var(--border);
+
+    position: absolute;
+    justify-self: center;
+
+    bottom: -7%;
+    opacity: 0%;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background-color: var(--background-2);
+
+    gap: 3%;
+
+
+    transition: all 0.5s ease-in-out;
+
+}
+.LinkButton.Show {
+    
+    bottom: -10%;
+    opacity: 100%;
+}
+
+.LinkImage {
+    
+    height: 20px;
+    aspect-ratio: 1/1;
+}
+
+.LinkMessage {
+    
+    font-size: clamp(8px, 0.8vw, 14px);
+
+    text-wrap: nowrap;
+
+    margin: 0;
+    padding: 0;
+}
+
+@media (max-width: 880px) {
+    .CardContainer {
+        flex-direction: column;
+        height: 90%;
+       
+        width: 60%;
+    }
+
+    .InformationContainer {
+        
+        width: 100%;
+        height: 40%;
+    }
+
+    .ProjectImage {
+
+        object-fit: fill;
+
+        width: 100%;
+        height: 30%;
+    }
+
+    .Track {
+
+        height: 80%;
+    }
+}

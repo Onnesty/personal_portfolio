@@ -1,0 +1,172 @@
+img {
+  -webkit-user-drag: none;
+  user-drag: none;
+  user-select: none;
+}
+
+* {
+  -webkit-user-select: none; /* Safari */
+  -ms-user-select: none;     /* IE 10 and IE Mobile */
+  user-select: none;         /* Standard syntax for Chrome, Firefox, Opera */
+}
+
+.MainContainer {
+
+    width: 100%;
+    height: 100vh;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    position: relative;
+
+    background-color: var(--background-2);
+
+
+    border-bottom: 1px solid var(--border-2);
+    border-top: 1px solid var(--border-2);
+
+    gap: 1%;
+
+
+}
+
+
+.Title {
+
+    width: 100%;
+    height: 10%;
+
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    font-weight: bolder;
+    font-size: clamp(24px, 5vw, 64px);
+    font-family: var(--title-font);
+    
+    opacity: 0;
+}
+
+
+.SkillsContainer {
+
+    width: 100%;
+
+    height: 40%;
+
+
+    display: flex;
+    align-items: center;
+
+    transform: translateY(-20%);
+
+    opacity: 0%;
+
+    transition: all 1s ease-in-out;
+
+
+}
+.SkillsContainer.Show {
+
+    transform: translateY(0%);
+    opacity: 100%;
+
+
+}
+
+.Fade {
+
+    height: 100%;
+    width: 5rem;
+
+    z-index: 10;
+    pointer-events: none;
+
+    position: absolute;
+
+}
+
+.Track {
+
+    display: flex;
+    align-items: center;
+
+
+    width: max-content;
+    height: 100%;
+
+    gap: 20px;
+    animation: Slide 15s linear infinite;
+
+    animation-play-state: paused;
+    
+}
+.Track.Play {
+
+    animation-play-state: running;
+
+    
+    
+}
+
+@keyframes Slide {
+
+    0%{
+        transform: translateX(0%);
+    } 100% {
+        transform: translateX(-50%);
+    }
+    
+}
+
+.CardContainer {
+    
+    height: 100%;
+    aspect-ratio: 1/1.5;
+    
+
+    cursor: pointer;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    background-color: var(--background-3);
+
+    padding: 20px;
+
+    gap: 5%;
+
+    border: solid 1px var(--border);
+    border-radius: 20px;
+
+    box-shadow: 0px 0px 15px  rgb(0,0,0, 0.5);
+
+    transform: translateY(0%);
+
+    transition: all 0.2s linear;
+
+    
+}
+.CardContainer:hover {
+    transform: translateY(-10%);
+    background-color: var(--background-4)
+}
+
+.CardImage {
+
+    width: 100%;
+    aspect-ratio: 1/1;
+
+}
+
+.CardName {
+    font-size: clamp(20px, 2vw, 32px);
+}
+

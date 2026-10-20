@@ -1,0 +1,50 @@
+@import url('https://fonts.googleapis.com/css2?family=Onest:wght@100..900&family=Outfit:wght@100..900&display=swap');
+
+*,*::before,*::after{box-sizing:border-box}
+
+:root {
+
+    --background:#0F1319;
+    --background-2:#141920;
+    --background-3:#1a2130;
+    --background-4:#1E2838;
+
+    --generaltext-color:#E4EEF8;
+
+    --sky:#4a9ee8;
+    --sky-2:#7EC8F0;
+    
+    --border:#1E3050;
+    --border-2:#203457;
+
+    --red:#FD4040;
+
+    --title-font:'Outfit',sans-serif;
+    --text-font:'Onest',sans-serif;
+
+
+    
+
+
+ 
+  --sky3:#2A6AAA;
+  --sky4:#0D2A44;
+  --text2:#8AAEC8;
+  --text3:#506070;
+
+  --green:#3DCC8E;
+
+
+    
+}
+
+body {
+
+    margin: 0; 
+    padding: 0;
+
+}
+
+body::-webkit-scrollbar {
+    display: none;
+}
