@@ -1,8 +1,6 @@
 import styles from './Projects.module.css';
 import { useInView } from 'react-intersection-observer';
-import { useNavigate } from 'react-router-dom';
-import { Link } from 'react-router';
-import { useState, useRef, useEffect } from 'react';
+import { useState } from 'react';
 
 import {SoftwareProjectData, EngineeringProjectData, type ProjectDataStruct}from './ProjectInformation.tsx';
 
@@ -12,8 +10,6 @@ export default function Projects({ Type } : { Type : string }) {
     const Data = (Type === "Software") ? SoftwareProjectData() as ProjectDataStruct[] : EngineeringProjectData() as ProjectDataStruct[];
 
     const Size = Data.length;
-
-    const GoTo = useNavigate();
     
     const { ref : ScrollRef, inView } = useInView({ // For Intersection Observer
     threshold: 0.3,
