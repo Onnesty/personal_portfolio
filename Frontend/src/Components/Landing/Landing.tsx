@@ -6,7 +6,7 @@ import Skills from "../Skills/Skills.tsx"
 import Projects from "../Projects/Projects.tsx"
 import Contact from "../Contact/Contact.tsx"
 
-import { useRef, useEffect } from "react"
+import { useRef} from "react"
 
 
 export interface PageRefStruct { // Must be same name as the variables
