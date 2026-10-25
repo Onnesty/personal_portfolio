@@ -33,6 +33,33 @@ export function SoftwareProjectData() : ProjectDataStruct[] {
             {
                 ID : 1,
                 
+                Title : "Persona AI",
+
+                ProjectImage: "/SoftwareProjects/PersonaAI.png",
+
+                Technologies : [
+                    { Name: "HTML", Image: "/Technologies/HTML.svg"},
+                    { Name: "CSS", Image: "/Technologies/CSS.svg"},
+                    { Name: "TypeScript", Image: "/Technologies/TypeScript.svg"},
+                    { Name: "React", Image: "/Technologies/React.svg"},
+                    { Name: "MongoDB", Image: "/Technologies/MongoDB.svg"},
+
+                ],
+
+                Description : 
+                `
+                    This is a web application where you can use your chat logs with someone else and replicate them using AI. 
+                    You can replicate as many as you want as long as you have the relevant data to provide.
+                `,
+
+                Link: "https://personaai-tau-teal.vercel.app/"
+
+
+            },
+
+            {
+                ID : 2,
+                
                 Title : "Encryptor & Decryptor",
 
                 ProjectImage: "/SoftwareProjects/EncryptorDecryptor.png",
@@ -61,9 +88,32 @@ export function EngineeringProjectData() : ProjectDataStruct[] {
     return (
 
         [
-
             {
                 ID : 1,
+                
+                Title : "Smart Wall Adapter",
+
+                ProjectImage: "/EngineeringProjects/SmartPlug.JPG",
+
+                Technologies : [
+                    { Name: "ArduinoIDE", Image: "/Technologies/ArduinoIDE.svg"}, 
+                    { Name: "C++", Image: "/Technologies/CPP.svg"},
+                    { Name: "EasyEDA", Image: "/Technologies/EasyEDA.svg"}, 
+                    { Name: "Fusion360", Image: "/Technologies/Fusion.svg"}, 
+
+                ],
+
+                Description : 
+                `
+                    IoT based project that features a wall adapter device that can be toggled on and off remotely
+                    by a controller. Primarily uses ESP-NOW as the communication method. 
+                `,
+
+                Link: ""
+            },
+
+            {
+                ID : 2,
                 
                 Title : "Mini Fake Access Point",
 
@@ -82,12 +132,7 @@ export function EngineeringProjectData() : ProjectDataStruct[] {
                 `
                     This project creates its own WiFi and acts as a fake WiFi access point. When a user connects, they are 
                     immediately redirected to a fake website via DNS captive portal.
-                    This utilizes an ESP-01s mounted on a custom perforated board circuit. This also features an Admin Dashboard
-                    to check information, such as devices connected and devices who fell for it, and it also features operations, such as
-                    changing the SSID and clearing out the devices list.
-
-
-
+                    This also features an Admin Dashboard to check relevant information.
                 `,
 
                 Link: "https://github.com/Onnesty/esp01s-8266-troll-website"

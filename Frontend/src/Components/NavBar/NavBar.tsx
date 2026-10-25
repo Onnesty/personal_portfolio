@@ -1,66 +1,131 @@
 import styles from './NavBar.module.css'
 
+import { type PageRefStruct } from '../Landing/Landing';
+
+
+import { useEffect, useState } from 'react';
+
+
+
+interface ButtonInformation {
+  
+    Title: string;
+    Ref: React.RefObject<HTMLDivElement | null>;
+
+}
+
 interface NavBarProps {
-    NavigateHome: () => void;
+    RefObj: PageRefStruct;
 }
 
 import NavButton from './Buttons/NavButtons';
 
-      
-export default function NavBar( { NavigateHome } : NavBarProps) {
-    
 
-    const ButtonInformation = [
+const Scroll = (Ref : React.RefObject<HTMLDivElement | null>) => {
+
+    Ref?.current?.scrollIntoView({
+        behavior: "smooth",
+        block: 'center'
+    })
+
+}
+
+      
+export default function NavBar( { RefObj } : NavBarProps) {
+    
+    const [ActivePage, UpdateActivePage] = useState("");
+
+    const ButtonInformationArray : ButtonInformation[]  = [
         {
             Title: "Home",
-            Image: "/Assets/Home.svg",
-            Link: ""
+            Ref: RefObj.HeroRef,
         },
         {
-            Title: "Facebook",
-            Image: "/Assets/Facebook.svg",
-            Link: "https://www.facebook.com/profile.php?id=61584212274234"
+            Title: "Skills",
+            Ref: RefObj.SkillsRef,
         },
         {
-            Title: "Email",
-            Image: "/Assets/Gmail.svg",
-            Link: "mailto:luiz_terrens@gmail.com"
+            Title: "Projects",
+            Ref: RefObj.SoftwareRef,
         },
         {
-            Title: "GitHub",
-            Image: "/Assets/GitHub.svg",
-            Link: "https://github.com/Onnesty"
+            Title: "Contact",
+            Ref: RefObj.ContactRef,
         },
-        {
-            Title: "LeetCode",
-            Image: "/Assets/LeetCode.svg",
-            Link: "https://leetcode.com/u/Onnesty/"
-        },
-        {
-            Title: "LinkedIn",
-            Image: "/Assets/LinkedIn.svg",
-            Link: "https://www.linkedin.com/in/luiz-morata-6ba892384"
-        },
+
+ 
     ]
 
-    const HandleButton = (Type : string, Link : string) => {
-        
-        if (Type === "Home") {
-            NavigateHome();
-        } else {
+    useEffect(() => {
 
-            window.open(Link, '_blank', 'noopener,noreferrer')
+        
+        const Observer = new IntersectionObserver((Entries) => {
+            
+            Entries.forEach(Entry => {
+
+                if (Entry.isIntersecting) {
+
+
+                    const Match = ButtonInformationArray.find( (Item) => 
+                        Item.Ref.current === Entry.target
+                    )
+
+                    if (Match) {
+                        UpdateActivePage(Match.Title);
+
+                        console.log(ActivePage)
+                    }
+
+                } 
+
+                
+            });
+            
+
+        },
+        {
+            threshold: 0.7
         }
-    }
+        )
+
+        ButtonInformationArray.forEach(Item => {
+            
+            if (Item.Ref.current) {
+                Observer.observe(Item.Ref.current);
+            }
+            
+        });
+
+        return () => {
+
+            ButtonInformationArray.forEach(Item => {
+            
+                if (Item.Ref.current) {
+                    Observer.unobserve(Item.Ref.current);
+                }
+                
+            });
+
+            
+        }
+    },[]);
 
 
     return (
         <div className = {styles.MainContainer}>
             
-            { ButtonInformation.map((Item,Index) => (
+            { ButtonInformationArray.map((Item,Index) => (
 
-                <NavButton key = {`${Item.Title}_${Index}`} Item = {Item} CallBack = {() => HandleButton(Item.Title, Item.Link)}  />
-            ))}
+
+                <NavButton 
+                    key = {`${Item.Title}_${Index}`} IsActive = {ActivePage == Item.Title} 
+                    Title = {Item.Title} CallBack = {() => Scroll(Item.Ref)}  
+                />
+
+            )
+            )
+            
+            }
 
         </div>
     )

@@ -45,7 +45,7 @@ export default function Projects({ Type } : { Type : string }) {
 
     return (
 
-        <div className = {styles.MainContainer}> 
+        <div className = {styles.MainContainer} ref = {ScrollRef}> 
 
             <div className = {styles.Fade} style = {{left: 0, background: "linear-gradient(to right, var(--background), transparent)"}}> </div>
             <div className = {styles.Fade} style = {{right: 0, background: "linear-gradient(to left, var(--background), transparent)"}}> </div>
@@ -53,18 +53,20 @@ export default function Projects({ Type } : { Type : string }) {
             
 
 
-            <h1 className = {`${styles.Title} ${inView ? "animate__animated animate__fadeInDown" : "animate__animated animate__fadeOutUp"}`} ref = {ScrollRef}>
+            <h1 className = {`${styles.Title} ${inView ? "animate__animated animate__fadeInDown" : "animate__animated animate__fadeOutUp"}`}>
 
                 {`My ${Type} Projects`}
 
             </h1>
 
 
-            <div className = {`${styles.Track} ${inView ? styles.Show : ""}`} ref = {ScrollRef}>
+                
 
-                <img className = {styles.CarouselButton} style = {{left : "5%"}} src = "/Assets/Back.png" alt = "Previous" onClick = {HandlePrevious}/>
+           
 
-                <img className = {styles.CarouselButton} style = {{right : "5%"}} src = "/Assets/Next.png" alt = "Next" onClick = {HandleNext}/>
+            <div className = {`${styles.Track} ${inView ? styles.Show : ""}`} >
+
+                
 
                 {Data.map((Item, Index) => (
                     
@@ -75,19 +77,17 @@ export default function Projects({ Type } : { Type : string }) {
                             onClick = {() => {window.open(Item.Link, '_blank', 'noopener,noreferrer')}}
                         >
                             
-                            <div className = {styles.InformationContainer}>
-
-                                <img className = {styles.ProjectImage} src = {Item.ProjectImage} alt = {Item.ProjectImage}/> 
-
-                            </div>
+                            <img className = {styles.ProjectImage} src = {Item.ProjectImage} alt = {Item.ProjectImage}/>      
 
                             <div className = {styles.InformationContainer}>
 
                                 <h3 className = {styles.ProjectTitle}> {Item.Title} </h3>
                                 
                                 <div className = {styles.TechnologiesContainer}>
-
-                                    {Item.Technologies.map((TechItem, TechIndex) => (
+                                    
+                                    <div className = {styles.TechnologyTrack}> 
+                                        
+                                        {Item.Technologies.map((TechItem, TechIndex) => (
 
                                         <div className = {styles.Technology} key = {`${Item.ID}_${Index}_${TechIndex}`}> 
                                             <img className = {styles.TechnologyImage} src = {TechItem.Image} alt = {TechItem.Name} />
@@ -96,13 +96,16 @@ export default function Projects({ Type } : { Type : string }) {
 
                                     ))}
 
+                                    </div>
+                                    
+
                                 </div>
                                 
-                                <h4 className = {styles.ProjectDecription}>
+                                <p className = {styles.ProjectDecription}>
 
                                     {Item.Description}
 
-                                </h4>
+                                </p>
 
                
                                 
@@ -125,6 +128,13 @@ export default function Projects({ Type } : { Type : string }) {
                     </div>
 
                 ))}
+
+
+
+                
+                <img className = {styles.CarouselButton} style = {{left : "5%"}} src = "/Assets/Back.png" alt = "Previous" onClick = {HandlePrevious}/>
+
+                <img className = {styles.CarouselButton} style = {{right : "5%"}} src = "/Assets/Next.png" alt = "Next" onClick = {HandleNext}/>
             
 
             </div>

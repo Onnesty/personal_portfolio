@@ -6,8 +6,10 @@ import { useState } from "react";
 export default function Skills() {
 
     const { ref : ScrollRef, inView } = useInView({ // For Intersection Observer
-        threshold: 0.3,
+        threshold: 0.1,
     })
+
+    
 
     const [AllowTrackRun, ToggleTrackRun] = useState(true);
 
@@ -36,12 +38,12 @@ export default function Skills() {
 
     return (
 
-        <div className = {styles.MainContainer}>
+        <div className = {styles.MainContainer}  ref = {ScrollRef}>
 
-            <div className = {styles.Fade} style = {{ left: 0, background: "linear-gradient(to right, var(--background-2), transparent)"}}> </div>
-            <div className = {styles.Fade} style = {{ right: 0, background: "linear-gradient(to left, var(--background-2), transparent)"}}> </div>
+            <div className = {styles.Fade} style = {{ left: 0, background: "linear-gradient(to right, var(--background), transparent)"}}> </div>
+            <div className = {styles.Fade} style = {{ right: 0, background: "linear-gradient(to left, var(--background), transparent)"}}> </div>
 
-            <h1 className = {`${styles.Title} ${inView ?  "animate__animated animate__fadeInDown" : "animate__animated animate__fadeOutUp"}`} ref = {ScrollRef}>
+            <h1 className = {`${styles.Title} ${inView ?  "animate__animated animate__fadeInDown" : "animate__animated animate__fadeOutUp"}`} >
                 
                 Technologies I've Learned
 
@@ -52,7 +54,7 @@ export default function Skills() {
     
 
 
-                <div className = {`${styles.Track} ${AllowTrackRun ? styles.Play : ""} `}>
+                <div className = {`${styles.Track} ${AllowTrackRun ? styles.Play : ""} `} >
 
                     {Items.map((Item, Index) => (
 

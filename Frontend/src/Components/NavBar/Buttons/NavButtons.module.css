@@ -5,6 +5,7 @@
 
     height: 100%;
 
+
     width: auto;
 
     cursor: pointer;
@@ -13,52 +14,40 @@
     align-items: center;
     justify-content: center;
 
-    position: relative;
 
     gap: 3%;
+    
+    font-size: 0.8rem;
 
-    transition: color 0.4s ease-in-out;
+
+    border-bottom: 1px transparent solid;
+
+    transition: all 0.3s ease-in-out;
     
 }
+.ButtonContainer:hover {
+    font-size: 0.85rem;
+}
 
+.ButtonContainer.Observed {
 
-.ButtonImage {
-
-    height: 60%;
-    aspect-ratio: 1/1;
+    border-bottom: 1px var(--sky-2) solid;
 
 }
+
+
+
 
 .ButtonTitle {
 
-    border-radius: 20px;
-    border: solid 1px var(--border);
-    background-color: var(--background-3);
-
-    padding: 6px;
-
-    font-weight: 500;
-    font-size: 14px;
 
     display: flex;
     align-items: center;
     justify-content: center;
 
-    position: absolute;
-
-
-    bottom: -60%;
-    opacity: 0%;
-
-    transition: all 0.4s ease-in-out;
-
+    margin: 0;
+    padding: 0;
 
 
 }
-.ButtonTitle.Hover {
-    
-    bottom: -80%;
-    opacity: 100%;
 
-    
-}

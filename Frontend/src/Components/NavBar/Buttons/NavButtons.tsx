@@ -1,36 +1,25 @@
 
-import { useState } from 'react';
+
 import styles from './NavButtons.module.css'
 
-interface ButtonInformation {
-  
-    Title: string;
-    Image: string;
-    Link: string;
 
-}
 
 interface NavButtonProps {
-
-    Item : ButtonInformation,
+    
+    IsActive: boolean,
+    Title : string,
     CallBack : () => void
 }
 
-export default function NavButton( { Item, CallBack } : NavButtonProps ) {
+export default function NavButton( { IsActive, Title, CallBack } : NavButtonProps ) {
     
-    const [IsHover, ToggleHover] = useState(false);
-
 
     return (
 
-        <div className = {styles.ButtonContainer}
-            onClick = {CallBack} onMouseEnter={()=>ToggleHover(true)} onMouseLeave={()=>ToggleHover(false)}
-        >
+        <div className = {`${styles.ButtonContainer} ${IsActive ? styles.Observed : ""}`} onClick = {CallBack}>
 
-            <img className = {styles.ButtonImage} src = {Item.Image} alt = {Item.Title}/>
-
-            <div className = {`${styles.ButtonTitle} ${IsHover ? styles.Hover : ""}`} >
-                {Item.Title}
+            <div className = {styles.ButtonTitle} >
+                {Title}
             </div>
 
         </div>

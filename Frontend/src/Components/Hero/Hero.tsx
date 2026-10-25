@@ -33,16 +33,7 @@ export default function Hero() {
 
                 
 
-                <div className = {styles.LearnMoreContainer}>
-
-                    <div className = {styles.Learn}>
-                    Learn More
-
-                    <img src = '/Assets/Down.png' className= { styles.DownImg}></img>
-                    </div>
-                    
-                </div>
-
+                
             </div>
 
         </div>
