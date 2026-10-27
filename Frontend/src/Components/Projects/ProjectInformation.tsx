@@ -115,9 +115,9 @@ export function EngineeringProjectData() : ProjectDataStruct[] {
             {
                 ID : 2,
                 
-                Title : "Mini Fake Access Point",
+                Title : "Mini Access Point",
 
-                ProjectImage: "/EngineeringProjects/TrollWebsite.jpeg",
+                ProjectImage: "/EngineeringProjects/TrollWebsite.JPG",
 
                 Technologies : [
                     { Name: "ArduinoIDE", Image: "/Technologies/ArduinoIDE.svg"}, 
@@ -130,8 +130,9 @@ export function EngineeringProjectData() : ProjectDataStruct[] {
 
                 Description : 
                 `
-                    This project creates its own WiFi and acts as a fake WiFi access point. When a user connects, they are 
-                    immediately redirected to a fake website via DNS captive portal.
+                    This project creates its own WiFi and acts as a WiFi access point. When a user connects, they are 
+                    immediately redirected to a website via DNS captive portal. In my case, I made it into a fake WiFi network  
+                    that leads to a prank website.
                     This also features an Admin Dashboard to check relevant information.
                 `,
 

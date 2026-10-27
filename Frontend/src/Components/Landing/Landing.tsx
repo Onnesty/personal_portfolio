@@ -5,6 +5,7 @@ import Hero from "../Hero/Hero.tsx"
 import Skills from "../Skills/Skills.tsx"
 import Projects from "../Projects/Projects.tsx"
 import Contact from "../Contact/Contact.tsx"
+import Footer from "../Footer/Footer.tsx"
 
 import { useRef} from "react"
 
@@ -60,6 +61,8 @@ export default function Landing() {
       <div ref = {RefObj.ContactRef} className = {styles.PageContainer}>
         <Contact/>
       </div>
+
+      <Footer></Footer>
 
       
 
