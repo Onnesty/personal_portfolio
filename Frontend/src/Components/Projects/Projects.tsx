@@ -47,8 +47,6 @@ export default function Projects({ Type } : { Type : string }) {
 
         <div className = {styles.MainContainer} ref = {ScrollRef}> 
 
-            <div className = {styles.Fade} style = {{left: 0, background: "linear-gradient(to right, var(--background), transparent)"}}> </div>
-            <div className = {styles.Fade} style = {{right: 0, background: "linear-gradient(to left, var(--background), transparent)"}}> </div>
 
             
 
@@ -70,7 +68,7 @@ export default function Projects({ Type } : { Type : string }) {
 
                 {Data.map((Item, Index) => (
                     
-                    <div className = {styles.ContentContainer} style = {{transform : `translateX(-${100 * CurrentIndex}%)`}}>
+                    <div key={Item.ID} className = {styles.ContentContainer} style = {{transform : `translateX(-${100 * CurrentIndex}%)`}}>
 
                         <div className = {styles.CardContainer} key = {`${Item.ID}_${Index}`} 
                             onPointerEnter = {() => {ToggleIsHover(true)}} onPointerLeave = {() => {ToggleIsHover(false)}}

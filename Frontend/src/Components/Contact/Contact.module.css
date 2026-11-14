@@ -80,7 +80,7 @@
     
     background-color: var(--background-3);
 
-    transform: translateX(5%);
+    transform: translateX(2%);
 }
 
 .LinkImage {
@@ -123,7 +123,7 @@
     height: auto;
     
     border-radius: 10px;
-    border: 1px solid var(--border);
+    border: 1px solid var(--surface-border);
 
     padding: 10px;
 
@@ -160,7 +160,7 @@ input:-webkit-autofill:active {
 
     border-radius: 20px;
 
-    border: 1px solid var(--border);
+    border: 1px solid var(--surface-border);
 
 
     background-color: var(--background);
@@ -195,7 +195,7 @@ input:-webkit-autofill:active {
 
 
     border-radius: 20px;
-    border: 1px solid var(--border);
+    border: 1px solid var(--surface-border);
 
     padding: 10px;
     padding-left: 20px;
@@ -250,4 +250,19 @@ input:-webkit-autofill:active {
     .LinkImage {
         height: 200%;
     }
+}
+
+
+.MainContainer { width: 100%; height: auto; min-height: 800px; max-height: none; padding: 80px max(24px, calc((100% - 1200px) / 2)); gap: 48px; }
+.ContactContainer { flex: 1; min-width: 0; width: auto; height: auto; }
+.LinkContainer { width: 100%; min-width: 0; min-height: 60px; }
+.LinkImage { width: 30px; height: 30px; object-fit: contain; }
+.ContactInputContainer { height: auto; font-size: .95rem; }
+.ContactInput { font-size: 1rem; }
+.TextInput { min-height: 180px; font-size: .875rem; line-height: 1.6; }
+.SendButton { min-height: 48px; }
+.SendImage { height: 22px; }
+@media (max-width: 760px) {
+ .MainContainer { flex-direction: column; min-height: auto; align-items: stretch; }
+ .ContactContainer { width: 100%; flex: auto; }
 }

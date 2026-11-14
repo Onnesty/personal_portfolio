@@ -1,0 +1,181 @@
+.MainContainer {
+
+    width: 100%;
+    min-height: min(800px, 90dvh);
+
+    padding: 96px 24px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-top: 1px solid var(--surface-border);
+    border-bottom: 1px solid var(--surface-border);
+}
+
+
+.ContentContainer {
+
+    width: 100%;
+    max-width: 1200px;
+
+    display: flex;
+    gap: clamp(32px, 6vw, 90px);
+}
+
+.Message, .Carousel {
+
+    flex: 1;
+    min-width: 0;
+}
+
+.Title {
+
+    font-family: var(--title-font);
+    font-size: clamp(1.6rem, 3vw, 2.5rem);
+    font-weight: 600;
+
+    margin: 0 0 28px;
+}
+
+.MessageBody {
+
+    min-height: 280px;
+
+    line-height: 1.8;
+    color: var(--text2);
+}
+
+
+.Viewport {
+
+    overflow: hidden;
+
+    border: 1px solid var(--surface-border);
+    border-radius: 24px;
+
+    background: var(--surface);
+}
+
+.Track {
+
+    display: flex;
+    transition: transform 0.45s ease;
+}
+
+.Slide {
+
+    flex: 0 0 100%;
+
+    min-width: 0;
+    min-height: 320px;
+}
+
+
+.Controls {
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    margin-top: 18px;
+}
+
+.CarouselButton, .DotButton {
+
+    min-width: 44px;
+    min-height: 44px;
+
+    border-radius: 50%;
+    border: 1px solid var(--surface-border);
+
+    background: var(--surface);
+    color: var(--sky-2);
+    font-size: 1.2rem;
+
+    cursor: pointer;
+}
+
+.CarouselButton {
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 10px;
+}
+
+.CarouselImage {
+
+    width: 24px;
+    height: 24px;
+    object-fit: contain;
+}
+
+.CarouselButton:focus-visible, .DotButton:focus-visible {
+
+    outline: 2px solid var(--sky-2);
+    outline-offset: 3px;
+}
+
+.Dots {
+
+    display: flex;
+    gap: 4px;
+}
+
+.DotButton {
+
+    background: transparent;
+    border: 0;
+
+    position: relative;
+}
+
+.DotButton::after {
+
+    content: '';
+
+    position: absolute;
+    inset: 0;
+    margin: auto;
+
+    width: 7px;
+    height: 7px;
+
+    border-radius: 50%;
+    background: var(--text3);
+}
+
+.DotButton[aria-current]::after {
+
+    background: var(--sky-2);
+}
+
+
+@media (max-width: 760px) {
+
+    .MainContainer {
+        min-height: auto;
+        padding: 80px 20px;
+    }
+
+    .ContentContainer {
+        flex-direction: column;
+    }
+
+    .MessageBody {
+        min-height: 180px;
+    }
+
+    .Slide {
+        min-height: 260px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+    .Track {
+        transition: none;
+    }
+}

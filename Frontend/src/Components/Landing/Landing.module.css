@@ -2,7 +2,9 @@
 
 .MainContainer {
 
-  background-color: var(--background);
+
+  background-color: transparent;
+  isolation: isolate;
 
   font-family: var(--text-font);
   
@@ -14,7 +16,11 @@
   justify-content: flex-start;
 
   width: 100%;
-  height: auto;
+  height: 100dvh;
+
+  overflow-y: auto;
+  overflow-x: hidden;
+  scroll-behavior: smooth;
 
 
   margin: 0;
@@ -35,6 +41,69 @@
 
 }
 
+/* A fixed sky stays in place while the page scrolls above it. */
+.SpaceBackground {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: -1;
+  background: var(--background);
+}
+
+.Star {
+  position: absolute;
+  border-radius: 50%;
+  background: var(--generaltext-color);
+  box-shadow: 0 0 6px 1px color-mix(in srgb, var(--sky-2) 50%, transparent);
+  opacity: .45;
+  animation: twinkle var(--twinkle-duration) ease-in-out var(--twinkle-delay) infinite,
+    starDrift 19s ease-in-out var(--twinkle-delay) infinite alternate;
+}
+
+.Nebula {
+  position: absolute;
+  width: 75vmax;
+  height: 65vmax;
+  left: -30%;
+  top: -35%;
+  border-radius: 50%;
+  background: radial-gradient(ellipse, color-mix(in srgb, var(--sky) 8%, transparent), color-mix(in srgb, var(--sky3) 3%, transparent) 35%, transparent 65%);
+  animation: cosmicBurst 26s ease-in-out infinite alternate;
+  will-change: transform, opacity;
+}
+
+.Nebula:nth-child(2) {
+  left: 40%;
+  top: 15%;
+  background: radial-gradient(ellipse, color-mix(in srgb, var(--sky-2) 6%, transparent), color-mix(in srgb, var(--sky4) 3%, transparent) 35%, transparent 65%);
+  animation-delay: -17s;
+  animation-duration: 32s;
+}
+
+.Nebula:nth-child(3) {
+  left: -10%;
+  top: 55%;
+  background: radial-gradient(ellipse, color-mix(in srgb, var(--sky3) 5%, transparent), color-mix(in srgb, var(--sky) 8%, transparent) 35%, transparent 65%);
+  animation-delay: -9s;
+  animation-duration: 23s;
+}
+
+@keyframes twinkle {
+  0%, 100% { opacity: .25; }
+  50% { opacity: .65; }
+}
+
+@keyframes cosmicBurst {
+  0% { opacity: .25; transform: translate3d(-8%, -6%, 0) scale(.8) rotate(-12deg); }
+  50% { opacity: .85; }
+  100% { opacity: .4; transform: translate3d(22%, 16%, 0) scale(1.3) rotate(20deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .Star, .Nebula { animation: none; will-change: auto; }
+}
+
 .PageContainer {
 
   width: 100%;
@@ -42,3 +111,89 @@
 }
 
 
+
+.PageContainer { flex-shrink: 0; min-width: 0; scroll-margin-top: 90px; }
+@keyframes starDrift {
+  to { transform: translate(var(--drift-x), var(--drift-y)); }
+}
+.Comet {
+  position: absolute;
+  top: 15%; left: 75%;
+  width: 65px; height: 1px;
+  background: linear-gradient(to right, transparent, var(--sky-2), var(--generaltext-color));
+  border-radius: 50%; opacity: 0;
+  transform: rotate(135deg);
+  animation: cometStreak 23s linear infinite;
+}
+.Comet:nth-of-type(2) { top: 45%; left: 90%; animation-delay: 11s; animation-duration: 31s; }
+@keyframes cometStreak {
+  0%, 91% { opacity: 0; transform: translate(0, 0) rotate(135deg); }
+  92% { opacity: .8; }
+  96%, 100% { opacity: 0; transform: translate(-280px, 280px) rotate(135deg); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .Star, .Nebula, .Comet { animation: none; }
+  .MainContainer { scroll-behavior: auto; }
+}
+
+/* A short distant pulse, followed by a long quiet interval. */
+.Pulsar {
+
+    position: absolute;
+    left: 78%;
+    top: 32%;
+
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+
+    background: var(--generaltext-color);
+    box-shadow: 0 0 10px 3px var(--sky-2), 0 0 32px 8px color-mix(in srgb, var(--sky) 25%, transparent);
+
+    opacity: 0;
+    animation: pulsarGlow 29s ease-out 9s infinite;
+}
+
+.Pulsar::before, .Pulsar::after {
+
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%) rotate(-25deg);
+    pointer-events: none;
+}
+
+.Pulsar::before {
+
+    width: 3px;
+    height: 100px;
+    border-radius: 50%;
+    background: linear-gradient(transparent, color-mix(in srgb, var(--sky-2) 55%, transparent), var(--generaltext-color), color-mix(in srgb, var(--sky-2) 55%, transparent), transparent);
+}
+
+.Pulsar::after {
+
+    width: 18px;
+    height: 18px;
+    border: 1px solid color-mix(in srgb, var(--sky-2) 35%, transparent);
+    border-radius: 50%;
+    animation: pulsarRing 29s ease-out 9s infinite;
+}
+
+@keyframes pulsarGlow {
+    0%, 7%, 100% { opacity: 0; }
+    1% { opacity: .65; }
+    3% { opacity: .3; }
+}
+
+@keyframes pulsarRing {
+    0% { opacity: 0; transform: translate(-50%, -50%) scale(.4); }
+    1% { opacity: .6; }
+    7%, 100% { opacity: 0; transform: translate(-50%, -50%) scale(4); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .Pulsar, .Pulsar::after { animation: none; }
+    .Pulsar { display: none; }
+}

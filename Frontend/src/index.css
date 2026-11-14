@@ -5,6 +5,14 @@
 :root {
 
     --background:#0F1319;
+    --surface: color-mix(in srgb, var(--background) 94%, var(--generaltext-color));
+    --surface-hover: color-mix(in srgb, var(--background) 90%, var(--generaltext-color));
+    --card-surface: color-mix(in srgb, var(--background-2) 55%, var(--background-3));
+    --card-hover: var(--background-3);
+    --card-border: color-mix(in srgb, var(--sky-2) 10%, var(--background-3));
+    --card-border-hover: color-mix(in srgb, var(--sky-2) 22%, var(--background-3));
+    --surface-border: color-mix(in srgb, var(--generaltext-color) 9%, transparent);
+
     --background-2:#141920;
     --background-3:#1a2130;
     --background-4:#1E2838;
@@ -46,7 +54,7 @@ html {
     
     width: 100%;
 
-    overflow-x: hidden;
+    overflow: hidden;
   
 }
 body {
@@ -54,13 +62,15 @@ body {
     margin: 0; 
     padding: 0;
 
-    width: 100%;
 
     overflow: hidden;
 
-
+   background-color: var(--background);
+    
 
 }
+
+
 
 body::-webkit-scrollbar {
     display: none;

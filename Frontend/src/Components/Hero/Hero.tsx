@@ -1,5 +1,6 @@
 import styles from './Hero.module.css'
 import 'animate.css';
+import HangingIdBadge from './HangingID';
 
 
 
@@ -29,7 +30,10 @@ export default function Hero() {
                 </div>
 
 
-                <img className = {`${styles.ProfileImage} animate__animated animate__zoomIn`} src = "/Assets/Persona.png"></img>
+                <div className={styles.BadgeContainer}>
+                    <HangingIdBadge name="LUIZ" role="Computer Engineering Student" organization="ONNESTY"
+                        department="Computer Engineering" zone="Software & Hardware" />
+                </div>
 
                 
 

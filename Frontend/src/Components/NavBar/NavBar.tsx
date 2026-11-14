@@ -1,132 +1,58 @@
-import styles from './NavBar.module.css'
-
-import { type PageRefStruct } from '../Landing/Landing';
-
-
 import { useEffect, useState } from 'react';
-
-
-
-interface ButtonInformation {
-  
-    Title: string;
-    Ref: React.RefObject<HTMLDivElement | null>;
-
-}
-
-interface NavBarProps {
-    RefObj: PageRefStruct;
-}
-
+import type { PageRefStruct } from '../Landing/Landing';
 import NavButton from './Buttons/NavButtons';
+import styles from './NavBar.module.css';
 
+export default function NavBar({ RefObj }: { RefObj: PageRefStruct }) {
+  const [activePage, setActivePage] = useState('Home');
+  const { HeroRef, AboutRef, SkillsRef, SoftwareRef, EngineeringRef, ContactRef } = RefObj;
+  const links = [
+    { title: 'Home', ref: HeroRef }, { title: 'About', ref: AboutRef },
+    { title: 'Skills', ref: SkillsRef }, { title: 'Projects', ref: SoftwareRef },
+    { title: 'Contact', ref: ContactRef },
+  ];
 
-const Scroll = (Ref : React.RefObject<HTMLDivElement | null>) => {
+  useEffect(() => {
+    const scroller = HeroRef.current?.parentElement;
+    if (!scroller) return;
+    const sections = [
+      { title: 'Home', ref: HeroRef }, { title: 'About', ref: AboutRef },
+      { title: 'Skills', ref: SkillsRef }, { title: 'Projects', ref: SoftwareRef },
+      { title: 'Projects', ref: EngineeringRef }, { title: 'Contact', ref: ContactRef },
+    ];
+    let frame = 0;
+    const update = () => {
+      const marker = scroller.getBoundingClientRect().top + Math.min(scroller.clientHeight * .35, 240);
+      let title = 'Home';
+      for (const section of sections) {
+        if (section.ref.current && section.ref.current.getBoundingClientRect().top <= marker) title = section.title;
+      }
+      setActivePage(title);
+    };
+    const onScroll = () => {
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(update);
+    };
+    update();
+    scroller.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll);
+    return () => {
+      cancelAnimationFrame(frame);
+      scroller.removeEventListener('scroll', onScroll);
+      window.removeEventListener('resize', onScroll);
+    };
+  }, [HeroRef, AboutRef, SkillsRef, SoftwareRef, EngineeringRef, ContactRef]);
 
-    Ref?.current?.scrollIntoView({
-        behavior: "smooth",
-        block: 'center'
-    })
-
-}
-
-      
-export default function NavBar( { RefObj } : NavBarProps) {
-    
-    const [ActivePage, UpdateActivePage] = useState("");
-
-    const ButtonInformationArray : ButtonInformation[]  = [
-        {
-            Title: "Home",
-            Ref: RefObj.HeroRef,
-        },
-        {
-            Title: "Skills",
-            Ref: RefObj.SkillsRef,
-        },
-        {
-            Title: "Projects",
-            Ref: RefObj.SoftwareRef,
-        },
-        {
-            Title: "Contact",
-            Ref: RefObj.ContactRef,
-        },
-
- 
-    ]
-
-    useEffect(() => {
-
-        
-        const Observer = new IntersectionObserver((Entries) => {
-            
-            Entries.forEach(Entry => {
-
-                if (Entry.isIntersecting) {
-
-
-                    const Match = ButtonInformationArray.find( (Item) => 
-                        Item.Ref.current === Entry.target
-                    )
-
-                    if (Match) {
-                        UpdateActivePage(Match.Title);
-
-                        console.log(ActivePage)
-                    }
-
-                } 
-
-                
-            });
-            
-
-        },
-        {
-            threshold: 0.7
-        }
-        )
-
-        ButtonInformationArray.forEach(Item => {
-            
-            if (Item.Ref.current) {
-                Observer.observe(Item.Ref.current);
-            }
-            
-        });
-
-        return () => {
-
-            ButtonInformationArray.forEach(Item => {
-            
-                if (Item.Ref.current) {
-                    Observer.unobserve(Item.Ref.current);
-                }
-                
-            });
-
-            
-        }
-    },[]);
-
-
-    return (
-        <div className = {styles.MainContainer}>
-            
-            { ButtonInformationArray.map((Item,Index) => (
-
-
-                <NavButton 
-                    key = {`${Item.Title}_${Index}`} IsActive = {ActivePage == Item.Title} 
-                    Title = {Item.Title} CallBack = {() => Scroll(Item.Ref)}  
-                />
-
-            )
-            )
-            
-            }
-
-        </div>
-    )
+  return (
+    <nav className={styles.MainContainer} aria-label="Main navigation">
+      <div className={styles.Links}>
+        {links.map(({ title, ref }) => (
+          <NavButton key={title} Title={title} IsActive={activePage === title} CallBack={() => {
+            ref.current?.scrollIntoView({ block: 'start', behavior:
+              window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' });
+          }} />
+        ))}
+      </div>
+    </nav>
+  );
 }

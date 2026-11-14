@@ -23,8 +23,8 @@ img {
     justify-content: center;
 
     
-    border-top: 1px solid var(--border-2);
-    border-bottom: 1px solid var(--border-2);
+    border-top: 1px solid var(--surface-border);
+    border-bottom: 1px solid var(--surface-border);
 
     position: relative;
 
@@ -143,26 +143,28 @@ img {
     align-items: center;
     justify-content: space-evenly;
 
-    background-color: var(--background-2);
+    background-color: var(--card-surface);
 
     padding: 10px;
 
     gap: 5%;
 
-    border: solid 1px var(--border);
+    border: solid 1px var(--card-border);
     border-radius: 20px;
 
     box-shadow: 0px 0px 5px  rgb(0,0,0, 0.5);
 
     transform: translateY(0%);
 
-    transition: all 0.2s linear;
+    transition: transform 0.2s ease, background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
 
     
 }
 .CardContainer:hover {
     transform: translateY(-10%);
-    background-color: var(--background-3)
+    background-color: var(--card-hover);
+    border-color: var(--card-border-hover);
+    box-shadow: 0 8px 24px rgb(0 0 0 / 18%)
 }
 
 .CardImage {
@@ -183,3 +185,11 @@ img {
         height: 50dvh;
     }
 }
+
+
+.MainContainer { height: auto; min-height: 550px; max-height: none; padding: 72px 0; overflow: visible; gap: 40px; }
+.Title { height: auto; margin: 0; font-size: clamp(1.8rem, 4vw, 3rem); }
+.SkillsContainer { height: 260px; flex: none; }
+.CardName { font-size: 1rem; }
+@media (max-width: 600px) { .MainContainer { min-height: 450px; } .SkillsContainer { height: 210px; } }
+

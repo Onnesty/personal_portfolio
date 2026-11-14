@@ -13,9 +13,9 @@
     align-items: flex-start;
     justify-content: center;
 
-    background-color: var(--background);
 
-    border-bottom: 1px solid var(--border-2);
+
+    border-bottom: 1px solid var(--surface-border);
 
     position: relative;
 
@@ -113,10 +113,10 @@
     flex-shrink: 0;
 
     width: 100%;
-    height: 100%;
+    height: auto;
 
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     justify-content: center;
 
     transition: all 0.8s ease-in-out;
@@ -130,13 +130,13 @@
 
     width: 60%;
 
-    height: 90%;
+    height: auto;
 
     min-width: 300px;
     max-width: 800px;
 
-    min-height: 400px;
-    max-height: 800px;
+    min-height: 0;
+    max-height: none;
 
     
 
@@ -145,34 +145,36 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: space-evenly;
+    justify-content: flex-start;
 
 
     gap: 6px;
 
 
-    background-color: var(--background-2);
+    background-color: var(--card-surface);
 
     padding: 20px;
     
 
     cursor: pointer;
 
-    border: solid 1px var(--border);
+    border: solid 1px var(--card-border);
     border-radius: 40px;
 
     box-shadow: 0px 0px 5px rgb(0,0,0, 0.5);
 
     transform: translateY(0%);
 
-    transition: all 0.2s linear;
+    transition: transform 0.2s ease, background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
 
 
     
 }
 .CardContainer:hover {
     transform: translateY(-2%);
-    background-color: var(--background-3);
+    background-color: var(--card-hover);
+    border-color: var(--card-border-hover);
+    box-shadow: 0 8px 24px rgb(0 0 0 / 18%);
 }
 
 .ProjectImage {
@@ -194,7 +196,7 @@
 
     width: 100%;
 
-    max-height: 500px;
+    max-height: none;
 
     display: flex;
     flex-direction: column;
@@ -330,7 +332,7 @@
 
 
 
-    background-color: var(--background-2);
+    background-color: var(--card-surface);
 
     gap: 3%;
 
@@ -375,3 +377,35 @@
         height: 4%;
     }
 }
+
+
+.MainContainer { height: auto; min-height: 850px; max-height: none; padding: 72px 0 110px; gap: 36px; }
+.Title { height: auto; font-size: clamp(1.8rem, 4vw, 3rem); text-align: center; padding: 0 20px; }
+.Track { width: 100%; height: auto; align-items: flex-start; }
+.CardContainer { width: min(80%, 800px); min-width: 0; height: auto; min-height: 0; max-height: none; padding: 20px 20px 24px; gap: 20px; justify-content: flex-start; }
+.ProjectImage {
+  display: block;
+  flex: none;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 9;
+  min-height: 0;
+  object-fit: cover;
+  border-radius: 20px;
+}
+.InformationContainer { padding: 0 4px; }
+.ProjectTitle { font-size: clamp(1.1rem, 2vw, 1.5rem); text-align: center; margin: 8px 0; }
+.ProjectDecription { font-size: .95rem; text-align: left; line-height: 1.7; }
+.TechnologyName { font-size: .8rem; white-space: nowrap; }
+.Technology { flex-shrink: 0; gap: 8px; }
+.CarouselButton { width: 36px; height: 36px; top: 45%; }
+.LinkMessage { font-size: .85rem; }
+@media (max-width: 600px) {
+  .MainContainer { min-height: 0; }
+  .CardContainer { width: calc(100% - 40px); padding: 12px 12px 18px; border-radius: 24px; }
+  .ProjectImage { height: auto; border-radius: 12px; }
+  .InformationContainer { padding: 0 6px; }
+  .CarouselButton { top: auto; bottom: -85px; width: 44px; height: 44px; }
+  .LinkButton.Show { bottom: -52px; }
+}
+@media (hover: none) { .LinkButton { opacity: 1; bottom: -52px; } }

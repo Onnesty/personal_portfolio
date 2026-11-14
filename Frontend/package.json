@@ -13,8 +13,9 @@
     "animate.css": "^4.1.1",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
+    "react-intersection-observer": "^10.1.0",
     "react-router-dom": "^7.18.3",
-    "react-intersection-observer": "^10.1.0"
+    "three": "^0.187.0"
   },
   "devDependencies": {
     "@babel/core": "^7.29.7",
@@ -24,6 +25,7 @@
     "@types/node": "^24.13.3",
     "@types/react": "^19.2.18",
     "@types/react-dom": "^19.2.7",
+    "@types/three": "^0.187.0",
     "@vitejs/plugin-react": "^6.1.1",
     "babel-plugin-react-compiler": "^1.0.0",
     "eslint": "^10.10.0",
