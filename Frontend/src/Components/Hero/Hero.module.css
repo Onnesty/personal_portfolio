@@ -92,13 +92,13 @@
 
 .Explanation {
 
-    width: 80%;
+    width: 100%;
 
     font-family: var(--text-font);
 
-    font-size: clamp(0.8rem, 1vw, 1.5rem );
+    font-size: clamp(0.8rem, 1vw, 1rem);
 
-    text-indent: 5%;
+    text-indent: 0;
     text-align: justify;
 
     line-height: 1.5;
@@ -230,15 +230,6 @@
     font-size: clamp(1rem, 1.5vw, 1.3rem);
 }
 
-.Explanation {
-
-    width: 100%;
-    text-align: justify;
-    text-indent: 0;
-    font-size: 1rem;
-    line-height: 1.8;
-}
-
 .BadgeContainer {
 
     flex: 1 1 40%;
@@ -284,7 +275,6 @@
 
     .Explanation {
 
-        font-size: .9rem;
         line-height: 1.7;
         letter-spacing: .01em;
     }
