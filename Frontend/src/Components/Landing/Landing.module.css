@@ -1,142 +1,323 @@
-
-
 .MainContainer {
 
+    background-color: transparent;
+    isolation: isolate;
 
-  background-color: transparent;
-  isolation: isolate;
+    font-family: var(--text-font);
 
-  font-family: var(--text-font);
-  
-  color: var(--generaltext-color);
-  
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
+    color: var(--generaltext-color);
 
-  width: 100%;
-  height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
 
-  overflow-y: auto;
-  overflow-x: hidden;
-  scroll-behavior: smooth;
+    width: 100%;
+    height: 100dvh;
 
+    overflow-y: auto;
+    overflow-x: hidden;
+    scroll-behavior: smooth;
 
-  margin: 0;
-  padding: 0;
+    margin: 0;
+    padding: 0;
 
-  position: relative;
+    position: relative;
 
+    &::-webkit-scrollbar {
 
-
-
-  &::-webkit-scrollbar {
-    display: none;
-  }
-  -ms-overflow-style: none;  
-  scrollbar-width: none; 
-
-  
-
+        display: none;
+    }
+    -ms-overflow-style: none;
+    scrollbar-width: none;
 }
 
 /* A fixed sky stays in place while the page scrolls above it. */
+
 .SpaceBackground {
-  position: fixed;
-  inset: 0;
-  overflow: hidden;
-  pointer-events: none;
-  z-index: -1;
-  background: var(--background);
+
+    position: fixed;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+    z-index: -1;
+    background: var(--background);
+}
+
+/* Daylight washes and orbital arcs echo the dark theme's sky. */
+.SpaceBackground > * {
+
+    filter: opacity(1);
+}
+
+:global(:root[data-theme='light']) .SpaceBackground > * {
+
+    filter: opacity(0);
+}
+
+:global(:root[data-theme='light']) .SpaceBackground {
+
+    background:
+        radial-gradient(ellipse at 48% 30%, rgb(255 255 255 / 70%), transparent 42%),
+        radial-gradient(ellipse at 0% 12%, rgb(137 191 245 / 60%), transparent 65%),
+        radial-gradient(ellipse at 100% 82%, rgb(180 160 229 / 48%), transparent 65%),
+        var(--background);
+}
+
+:global(:root[data-theme='light']) .SpaceBackground::before,
+:global(:root[data-theme='light']) .SpaceBackground::after {
+
+    content: '';
+    position: absolute;
+    width: 85vmax;
+    height: 58vmax;
+    border: 1px solid rgb(87 133 184 / 28%);
+    border-radius: 50%;
+    transform: rotate(-28deg);
+}
+
+:global(:root[data-theme='light']) .SpaceBackground::before {
+
+    top: -24vmax;
+    left: -30vmax;
+    box-shadow: 0 0 0 28px rgb(122 168 218 / 5%),
+        0 0 0 80px rgb(122 168 218 / 4%);
+}
+
+:global(:root[data-theme='light']) .SpaceBackground::after {
+
+    right: -34vmax;
+    bottom: -22vmax;
+    transform: rotate(-38deg);
+    border-color: rgb(135 115 178 / 25%);
+    box-shadow: 0 0 0 36px rgb(135 115 178 / 4%),
+        0 0 0 96px rgb(135 115 178 / 3%);
+}
+
+.DaylightOrbit {
+
+    display: none;
+}
+
+:global(:root[data-theme='light']) .SpaceBackground > .DaylightOrbit {
+
+    display: block;
+    filter: none;
+    position: absolute;
+    width: 85vmax;
+    height: 58vmax;
+    top: -24vmax;
+    left: -30vmax;
+    border-radius: 50%;
+    transform: rotate(-28deg);
+    padding: 3px;
+    overflow: hidden;
+    /* Cut out the center while the color wheel turns behind the orbit. */
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask-composite: exclude;
+}
+
+.DaylightOrbit::before {
+
+    content: '';
+    position: absolute;
+    inset: -50%;
+    background: conic-gradient(from 0deg,
+        transparent 0deg 30deg,
+        rgb(66 151 234 / 15%) 70deg,
+        rgb(54 139 230 / 85%) 105deg,
+        rgb(149 117 218 / 90%) 118deg,
+        transparent 122deg 210deg,
+        rgb(145 111 211 / 15%) 250deg,
+        rgb(145 111 211 / 75%) 285deg,
+        rgb(98 173 239 / 90%) 298deg,
+        transparent 302deg);
+    animation: daylightOrbit 36s linear infinite;
+}
+
+:global(:root[data-theme='light']) .SpaceBackground > .DaylightOrbit:last-child {
+
+    top: auto;
+    left: auto;
+    right: -34vmax;
+    bottom: -22vmax;
+    transform: rotate(-38deg);
+}
+
+.DaylightOrbit:last-child::before {
+
+    animation-direction: reverse;
+    animation-delay: -14s;
+    animation-duration: 44s;
+}
+
+@keyframes daylightOrbit {
+
+    to { transform: rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+    .DaylightOrbit::before {
+        animation: none;
+    }
 }
 
 .Star {
-  position: absolute;
-  border-radius: 50%;
-  background: var(--generaltext-color);
-  box-shadow: 0 0 6px 1px color-mix(in srgb, var(--sky-2) 50%, transparent);
-  opacity: .45;
-  animation: twinkle var(--twinkle-duration) ease-in-out var(--twinkle-delay) infinite,
+
+    position: absolute;
+    border-radius: 50%;
+    background: var(--generaltext-color);
+    box-shadow: 0 0 6px 1px color-mix(in srgb, var(--sky-2) 50%, transparent);
+    opacity: .45;
+    animation: twinkle var(--twinkle-duration) ease-in-out var(--twinkle-delay) infinite,
     starDrift 19s ease-in-out var(--twinkle-delay) infinite alternate;
 }
 
 .Nebula {
-  position: absolute;
-  width: 75vmax;
-  height: 65vmax;
-  left: -30%;
-  top: -35%;
-  border-radius: 50%;
-  background: radial-gradient(ellipse, color-mix(in srgb, var(--sky) 8%, transparent), color-mix(in srgb, var(--sky3) 3%, transparent) 35%, transparent 65%);
-  animation: cosmicBurst 26s ease-in-out infinite alternate;
-  will-change: transform, opacity;
+
+    position: absolute;
+    width: 75vmax;
+    height: 65vmax;
+    left: -30%;
+    top: -35%;
+    border-radius: 50%;
+    background: radial-gradient(ellipse, color-mix(in srgb, var(--sky) 8%, transparent), color-mix(in srgb, var(--sky3) 3%, transparent) 35%, transparent 65%);
+    animation: cosmicBurst 26s ease-in-out infinite alternate;
+    will-change: transform, opacity;
 }
 
 .Nebula:nth-child(2) {
-  left: 40%;
-  top: 15%;
-  background: radial-gradient(ellipse, color-mix(in srgb, var(--sky-2) 6%, transparent), color-mix(in srgb, var(--sky4) 3%, transparent) 35%, transparent 65%);
-  animation-delay: -17s;
-  animation-duration: 32s;
+
+    left: 40%;
+    top: 15%;
+    background: radial-gradient(ellipse, color-mix(in srgb, var(--sky-2) 6%, transparent), color-mix(in srgb, var(--sky4) 3%, transparent) 35%, transparent 65%);
+    animation-delay: -17s;
+    animation-duration: 32s;
 }
 
 .Nebula:nth-child(3) {
-  left: -10%;
-  top: 55%;
-  background: radial-gradient(ellipse, color-mix(in srgb, var(--sky3) 5%, transparent), color-mix(in srgb, var(--sky) 8%, transparent) 35%, transparent 65%);
-  animation-delay: -9s;
-  animation-duration: 23s;
+
+    left: -10%;
+    top: 55%;
+    background: radial-gradient(ellipse, color-mix(in srgb, var(--sky3) 5%, transparent), color-mix(in srgb, var(--sky) 8%, transparent) 35%, transparent 65%);
+    animation-delay: -9s;
+    animation-duration: 23s;
 }
 
 @keyframes twinkle {
-  0%, 100% { opacity: .25; }
-  50% { opacity: .65; }
+
+    0%, 100% {
+
+        opacity: .25;
+    }
+
+    50% {
+
+        opacity: .65;
+    }
 }
 
 @keyframes cosmicBurst {
-  0% { opacity: .25; transform: translate3d(-8%, -6%, 0) scale(.8) rotate(-12deg); }
-  50% { opacity: .85; }
-  100% { opacity: .4; transform: translate3d(22%, 16%, 0) scale(1.3) rotate(20deg); }
+
+    0% {
+
+        opacity: .25;
+        transform: translate3d(-8%, -6%, 0) scale(.8) rotate(-12deg);
+    }
+
+    50% {
+
+        opacity: .85;
+    }
+
+    100% {
+
+        opacity: .4;
+        transform: translate3d(22%, 16%, 0) scale(1.3) rotate(20deg);
+    }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .Star, .Nebula { animation: none; will-change: auto; }
+
+    .Star, .Nebula {
+
+        animation: none;
+        will-change: auto;
+    }
 }
 
 .PageContainer {
 
-  width: 100%;
-  height: max-content;
+    width: 100%;
+    height: max-content;
 }
 
+.PageContainer {
 
+    flex-shrink: 0;
+    min-width: 0;
+    scroll-margin-top: 90px;
+}
 
-.PageContainer { flex-shrink: 0; min-width: 0; scroll-margin-top: 90px; }
 @keyframes starDrift {
-  to { transform: translate(var(--drift-x), var(--drift-y)); }
+
+    to {
+
+        transform: translate(var(--drift-x), var(--drift-y));
+    }
 }
+
 .Comet {
-  position: absolute;
-  top: 15%; left: 75%;
-  width: 65px; height: 1px;
-  background: linear-gradient(to right, transparent, var(--sky-2), var(--generaltext-color));
-  border-radius: 50%; opacity: 0;
-  transform: rotate(135deg);
-  animation: cometStreak 23s linear infinite;
+
+    position: absolute;
+    top: 15%;
+    left: 75%;
+    width: 65px;
+    height: 2px;
+    background: linear-gradient(to right, transparent, var(--sky-2), var(--generaltext-color));
+    border-radius: 50%;
+    opacity: 0;
+    transform: rotate(135deg);
+    box-shadow: 0 0 10px color-mix(in srgb, var(--sky-2) 35%, transparent);
+    animation: cometStreak var(--event-duration, 23s) linear var(--event-delay, 0s) infinite;
 }
-.Comet:nth-of-type(2) { top: 45%; left: 90%; animation-delay: 11s; animation-duration: 31s; }
+
 @keyframes cometStreak {
-  0%, 91% { opacity: 0; transform: translate(0, 0) rotate(135deg); }
-  92% { opacity: .8; }
-  96%, 100% { opacity: 0; transform: translate(-280px, 280px) rotate(135deg); }
+
+    0%, 82% {
+
+        opacity: 0;
+        transform: translate(0, 0) rotate(135deg);
+    }
+
+    85% {
+
+        opacity: .8;
+    }
+
+    96%, 100% {
+
+        opacity: 0;
+        transform: translate(-50vmax, 50vmax) rotate(135deg);
+    }
 }
+
 @media (prefers-reduced-motion: reduce) {
-  .Star, .Nebula, .Comet { animation: none; }
-  .MainContainer { scroll-behavior: auto; }
+
+    .Star, .Nebula, .Comet {
+
+        animation: none;
+    }
+
+    .MainContainer {
+
+        scroll-behavior: auto;
+    }
 }
 
 /* A short distant pulse, followed by a long quiet interval. */
+
 .Pulsar {
 
     position: absolute;
@@ -148,10 +329,10 @@
     border-radius: 50%;
 
     background: var(--generaltext-color);
-    box-shadow: 0 0 10px 3px var(--sky-2), 0 0 32px 8px color-mix(in srgb, var(--sky) 25%, transparent);
+    box-shadow: 0 0 18px 5px var(--sky-2), 0 0 60px 16px color-mix(in srgb, var(--sky) 30%, transparent);
 
     opacity: 0;
-    animation: pulsarGlow 29s ease-out 9s infinite;
+    animation: pulsarGlow var(--event-duration, 29s) ease-out var(--event-delay, 9s) infinite;
 }
 
 .Pulsar::before, .Pulsar::after {
@@ -160,40 +341,74 @@
     position: absolute;
     left: 50%;
     top: 50%;
-    transform: translate(-50%, -50%) rotate(-25deg);
+    transform: translate(-50%, -50%) rotate(var(--jet-angle, -25deg));
     pointer-events: none;
 }
 
 .Pulsar::before {
 
-    width: 3px;
-    height: 100px;
+    width: 5px;
+    height: var(--jet-height, 190px);
     border-radius: 50%;
     background: linear-gradient(transparent, color-mix(in srgb, var(--sky-2) 55%, transparent), var(--generaltext-color), color-mix(in srgb, var(--sky-2) 55%, transparent), transparent);
 }
 
 .Pulsar::after {
 
-    width: 18px;
-    height: 18px;
+    width: 30px;
+    height: 30px;
     border: 1px solid color-mix(in srgb, var(--sky-2) 35%, transparent);
     border-radius: 50%;
-    animation: pulsarRing 29s ease-out 9s infinite;
+    animation: pulsarRing var(--event-duration, 29s) ease-out var(--event-delay, 9s) infinite;
 }
 
 @keyframes pulsarGlow {
-    0%, 7%, 100% { opacity: 0; }
-    1% { opacity: .65; }
-    3% { opacity: .3; }
+
+    0%, 7%, 100% {
+
+        opacity: 0;
+    }
+
+    1% {
+
+        opacity: .65;
+    }
+
+    3% {
+
+        opacity: .3;
+    }
 }
 
 @keyframes pulsarRing {
-    0% { opacity: 0; transform: translate(-50%, -50%) scale(.4); }
-    1% { opacity: .6; }
-    7%, 100% { opacity: 0; transform: translate(-50%, -50%) scale(4); }
+
+    0% {
+
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(.4);
+    }
+
+    1% {
+
+        opacity: .6;
+    }
+
+    7%, 100% {
+
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(4);
+    }
 }
 
 @media (prefers-reduced-motion: reduce) {
-    .Pulsar, .Pulsar::after { animation: none; }
-    .Pulsar { display: none; }
+
+    .Pulsar, .Pulsar::after {
+
+        animation: none;
+    }
+
+    .Pulsar {
+
+        display: none;
+    }
 }

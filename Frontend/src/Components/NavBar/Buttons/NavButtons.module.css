@@ -1,17 +1,50 @@
 .ButtonContainer {
-  appearance: none;
-  border: 1px solid transparent;
-  border-radius: 999px;
-  padding: 0 12px;
-  min-height: 36px;
-  background: transparent;
-  color: var(--text2);
-  font: 500 .8rem var(--text-font);
-  cursor: pointer;
-  transition: background .2s ease, color .2s ease, border-color .2s ease;
+
+    appearance: none;
+    border: 1px solid transparent;
+    border-radius: 999px;
+    padding: 0 12px;
+    min-height: 36px;
+    background: transparent;
+    color: var(--text2);
+    font: 500 .8rem var(--text-font);
+    cursor: pointer;
+    transition: background .2s ease, color .2s ease, border-color .2s ease;
 }
-.ButtonContainer:hover { color: var(--generaltext-color); background: color-mix(in srgb, var(--generaltext-color) 4%, transparent); }
-.ButtonContainer.Observed { color: var(--generaltext-color); background: color-mix(in srgb, var(--generaltext-color) 12%, transparent); border-color: color-mix(in srgb, var(--generaltext-color) 8%, transparent); }
-.ButtonContainer:focus-visible { outline: 2px solid var(--sky-2); outline-offset: 2px; }
-@media (max-width: 480px) { .ButtonContainer { min-height: 40px; padding: 0 clamp(8px, 2.5vw, 13px); font-size: .78rem; } }
-@media (prefers-reduced-motion: reduce) { .ButtonContainer { transition: none; } }
+
+.ButtonContainer:hover {
+
+    color: var(--generaltext-color);
+    background: color-mix(in srgb, var(--generaltext-color) 4%, transparent);
+}
+
+.ButtonContainer.Observed {
+
+    color: var(--generaltext-color);
+    background: color-mix(in srgb, var(--generaltext-color) 12%, transparent);
+    border-color: color-mix(in srgb, var(--generaltext-color) 8%, transparent);
+}
+
+.ButtonContainer:focus-visible {
+
+    outline: 2px solid var(--sky-2);
+    outline-offset: 2px;
+}
+
+@media (max-width: 480px) {
+
+    .ButtonContainer {
+
+        min-height: 40px;
+        padding: 0 clamp(8px, 2.5vw, 13px);
+        font-size: .78rem;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+    .ButtonContainer {
+
+        transition: none;
+    }
+}

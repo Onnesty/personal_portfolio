@@ -1,0 +1,83 @@
+/* Edit these two palettes to change page, card, and hanging ID colors.
+   Theme changes apply immediately; hover and scroll animations remain separate. */
+:root,
+:root[data-theme='dark'] {
+
+    color-scheme: dark;
+    --badge-background: #0F1319;
+    --badge-background-2: #141920;
+    --badge-background-3: #1A2130;
+    --badge-background-4: #1E2838;
+    --badge-text: #E4EEF8;
+    --badge-muted: #8AAEC8;
+    --badge-accent: #4A9EE8;
+    --badge-accent-2: #7EC8F0;
+    --badge-border: #1E3050;
+    --badge-border-2: #203457;
+    --surface: color-mix(in srgb, var(--background) 94%, var(--generaltext-color));
+    --surface-hover: color-mix(in srgb, var(--background) 90%, var(--generaltext-color));
+    --card-surface: color-mix(in srgb, var(--background-2) 55%, var(--background-3));
+    --card-hover: var(--background-3);
+    --card-border: color-mix(in srgb, var(--sky-2) 10%, var(--background-3));
+    --card-border-hover: color-mix(in srgb, var(--sky-2) 22%, var(--background-3));
+    --surface-border: color-mix(in srgb, var(--generaltext-color) 9%, transparent);
+    --background: #0F1319;
+    --background-2: #141920;
+    --background-3: #1A2130;
+    --background-4: #1E2838;
+    --generaltext-color: #E4EEF8;
+    --sky: #4A9EE8;
+    --sky-2: #7EC8F0;
+    --sky3: #2A6AAA;
+    --sky4: #0D2A44;
+    --border: #1E3050;
+    --border-2: #203457;
+    --text2: #8AAEC8;
+    --text3: #829AB5;
+    --red: #FD4040;
+    --green: #3DCC8E;
+    --shadow-color: rgb(0 0 0 / 50%);
+    --hover-shadow-color: rgb(0 0 0 / 18%);
+    --nav-shadow-color: rgb(0 0 0 / 25%);
+}
+
+:root[data-theme='light'] {
+
+    color-scheme: light;
+    --badge-background: #FFFFFF;
+    --badge-background-2: #FFFFFF;
+    --badge-background-3: #FFFFFF;
+    --badge-background-4: #EAF5FF;
+    --badge-text: #24354B;
+    --badge-muted: #53657C;
+    --badge-accent: #2868A9;
+    --badge-accent-2: #3C79B5;
+    --badge-border: #C8D3E1;
+    --badge-border-2: #AEBED2;
+    --background: #F5F5F7;
+    --background-2: #FFFFFF;
+    --background-3: #EFEFF2;
+    --background-4: #E5E5EA;
+    --generaltext-color: #1D1D1F;
+    --sky: #0066CC;
+    --sky-2: #005EBB;
+    --sky3: #0071E3;
+    --sky4: #DCEBFA;
+    --border: #D2D2D7;
+    --border-2: #C5C5CC;
+    --text2: #626268;
+    --text3: #6E6E73;
+    --red: #C32930;
+    --green: #187545;
+    --shadow-color: rgb(0 0 0 / 6%);
+    --hover-shadow-color: rgb(0 0 0 / 10%);
+    --nav-shadow-color: rgb(0 0 0 / 8%);
+
+    --surface: #FFFFFF;
+    --surface-hover: #F0F0F3;
+    --card-surface: #E8EDF4;
+    --card-hover: #DDE6F1;
+    --card-border: #CED8E5;
+    --card-border-hover: #A8BAD0;
+    --surface-border: #DEDEE3;
+}

@@ -1,145 +1,137 @@
-
-
-
-
 export interface ProjectDataStruct {
-    
-    ID : number;
 
-    Title : string;
+    id: number;
 
-    ProjectImage : string;
+    title: string;
 
-    Technologies : TechnologyStruct[];
+    projectImage: string;
 
-    Description : string;
+    technologies: TechnologyStruct[];
 
-    Link : string;
+    description: string;
+
+    link: string;
 
 }
 
 interface TechnologyStruct {
 
-    Name : string;
-    Image : string;
+    Name: string;
+    Image: string;
 }
 
-
-
-export function SoftwareProjectData() : ProjectDataStruct[] {
+export function SoftwareProjectData(): ProjectDataStruct[] {
 
     return (
         [
             {
-                ID : 1,
-                
-                Title : "Persona AI",
+                id: 1,
 
-                ProjectImage: "/SoftwareProjects/PersonaAI.png",
+                title: "Persona AI",
 
-                Technologies : [
-                    { Name: "HTML", Image: "/Technologies/HTML.svg"},
-                    { Name: "CSS", Image: "/Technologies/CSS.svg"},
-                    { Name: "TypeScript", Image: "/Technologies/TypeScript.svg"},
-                    { Name: "React", Image: "/Technologies/React.svg"},
-                    { Name: "MongoDB", Image: "/Technologies/MongoDB.svg"},
+                projectImage: "/SoftwareProjects/PersonaAI.png",
+
+                technologies: [
+                    { Name: "HTML", Image: "/Technologies/HTML.svg" },
+                    { Name: "CSS", Image: "/Technologies/CSS.svg" },
+                    { Name: "TypeScript", Image: "/Technologies/TypeScript.svg" },
+                    { Name: "React", Image: "/Technologies/React.svg" },
+                    { Name: "MongoDB", Image: "/Technologies/MongoDB.svg" },
 
                 ],
 
-                Description : 
-                `
-                    This is a web application where you can use your chat logs with someone else and replicate them using AI. 
+                description:
+                    `
+                    This is a web application where you can use your chat logs with someone else and replicate them using AI.
                     You can replicate as many as you want as long as you have the relevant data to provide.
                 `,
 
-                Link: "https://personaai-tau-teal.vercel.app/"
-
+                link: "https://personaai-tau-teal.vercel.app/"
 
             },
 
             {
-                ID : 2,
-                
-                Title : "Encryptor & Decryptor",
+                id: 2,
 
-                ProjectImage: "/SoftwareProjects/EncryptorDecryptor.png",
+                title: "Encryptor & Decryptor",
 
-                Technologies : [
-                    { Name: "C++", Image: "/Technologies/CPP.svg"}
+                projectImage: "/SoftwareProjects/EncryptorDecryptor.png",
+
+                technologies: [
+                    { Name: "C++", Image: "/Technologies/CPP.svg" }
                 ],
 
-                Description : 
-                `
+                description:
+                    `
                     This is a Command Line Interface (CLI) application developed to encrypt a file into a binary file
                     and decrypt it back to its original file type, without the use of keys.
                 `,
 
-                Link: "https://github.com/Onnesty/encryptor-decryptor-v2"
-
+                link: "https://github.com/Onnesty/encryptor-decryptor-v2"
 
             }
         ]
-    )
+    );
 
 }
 
-export function EngineeringProjectData() : ProjectDataStruct[] {
+export function EngineeringProjectData(): ProjectDataStruct[] {
 
     return (
 
         [
             {
-                ID : 1,
-                
-                Title : "Smart Wall Adapter",
+                id: 1,
 
-                ProjectImage: "/EngineeringProjects/SmartPlug.JPG",
+                title: "Smart Wall Adapter",
 
-                Technologies : [
-                    { Name: "ArduinoIDE", Image: "/Technologies/ArduinoIDE.svg"}, 
-                    { Name: "C++", Image: "/Technologies/CPP.svg"},
-                    { Name: "EasyEDA", Image: "/Technologies/EasyEDA.svg"}, 
-                    { Name: "Fusion360", Image: "/Technologies/Fusion.svg"}, 
+                projectImage: "/EngineeringProjects/SmartPlug.JPG",
+
+                technologies: [
+                    { Name: "ArduinoIDE", Image: "/Technologies/ArduinoIDE.svg" },
+                    { Name: "C++", Image: "/Technologies/CPP.svg" },
+                    { Name: "EasyEDA", Image: "/Technologies/EasyEDA.svg" },
+                    { Name: "Fusion360", Image: "/Technologies/Fusion.svg" },
 
                 ],
 
-                Description : 
-                `
+                description:
+                    `
                     IoT based project that features a wall adapter device that can be toggled on and off remotely
-                    by a controller. Primarily uses ESP-NOW as the communication method. 
+                    by a controller. Primarily uses ESP-NOW as the communication method.
                 `,
 
-                Link: ""
+                link: ""
             },
 
             {
-                ID : 2,
-                
-                Title : "Mini Access Point",
+                id: 2,
 
-                ProjectImage: "/EngineeringProjects/TrollWebsite.JPG",
+                title: "Mini Access Point",
 
-                Technologies : [
-                    { Name: "ArduinoIDE", Image: "/Technologies/ArduinoIDE.svg"}, 
-                    { Name: "C++", Image: "/Technologies/CPP.svg"},
-                    { Name: "HTML", Image: "/Technologies/HTML.svg"}, 
-                    { Name: "CSS", Image: "/Technologies/CSS.svg"}, 
-                    { Name: "JavaScript", Image: "/Technologies/Javascript.svg"}, 
-                    { Name: "EasyEDA", Image: "/Technologies/EasyEDA.svg"}, 
+                projectImage: "/EngineeringProjects/TrollWebsite.JPG",
+
+                technologies: [
+                    { Name: "ArduinoIDE", Image: "/Technologies/ArduinoIDE.svg" },
+                    { Name: "C++", Image: "/Technologies/CPP.svg" },
+                    { Name: "HTML", Image: "/Technologies/HTML.svg" },
+                    { Name: "CSS", Image: "/Technologies/CSS.svg" },
+                    { Name: "JavaScript", Image: "/Technologies/Javascript.svg" },
+                    { Name: "EasyEDA", Image: "/Technologies/EasyEDA.svg" },
                 ],
 
-                Description : 
-                `
-                    This project creates its own WiFi and acts as a WiFi access point. When a user connects, they are 
-                    immediately redirected to a website via DNS captive portal. In my case, I made it into a fake WiFi network  
+                description:
+                    `
+                    This project creates its own WiFi and acts as a WiFi access point. When a user connects, they are
+                    immediately redirected to a website via DNS captive portal. In my case, I made it into a fake WiFi network
                     that leads to a prank website.
                     This also features an Admin Dashboard to check relevant information.
                 `,
 
-                Link: "https://github.com/Onnesty/esp01s-8266-troll-website"
+                link: "https://github.com/Onnesty/esp01s-8266-troll-website"
             }
-            
+
         ]
-    )
+    );
 
 }

@@ -1,5 +1,3 @@
-
-
 .MainContainer {
 
     width: 100dvw;
@@ -24,7 +22,7 @@
     justify-content: center ;
 
     gap: 24px;
-    
+
     height: 60%;
     width: 40%;
 
@@ -63,7 +61,7 @@
     border: solid 1px var(--border);
     border-radius: 40px;
 
-    box-shadow: 0px 0px 5px rgb(0,0,0, 0.5);
+    box-shadow: 0px 0px 5px var(--shadow-color);
 
     font-size: clamp(2rem, 1vw, 3rem);
 
@@ -77,23 +75,22 @@
 }
 
 .LinkContainer:hover {
-    
+
     background-color: var(--background-3);
 
     transform: translateX(2%);
 }
 
 .LinkImage {
+
     height: 100%;
 
     aspect-ratio: 1/1;
-
 }
 
 .LinkTitle {
 
     font-size: clamp(0.8rem, .9vw, 1rem);
-
 }
 
 .ContactInputContainer {
@@ -109,19 +106,15 @@
     height: 10%;
 
     font-size: clamp(0.7rem, .5vw, 1.5rem);
-    color: color-mix(in srgb, var(--generaltext-color) 80%, transparent)
-
-
-
-
+    color: color-mix(in srgb, var(--generaltext-color) 80%, transparent);
 }
 
 .ContactInput {
 
     width: 100%;
-    
+
     height: auto;
-    
+
     border-radius: 10px;
     border: 1px solid var(--surface-border);
 
@@ -133,23 +126,22 @@
     font-size: clamp(0.75rem, .1vw, 1.5rem);
 
     outline: none;
-
-
 }
+
 input:-webkit-autofill,
 input:-webkit-autofill:hover,
 input:-webkit-autofill:focus,
 input:-webkit-autofill:active {
-    
+
     -webkit-box-shadow: 0 0 0 1000px var(--background) inset !important;
-   
+
     -webkit-text-fill-color: var(--generaltext-color) !important;
-    
+
     transition: background-color 5000s ease-in-out 0s;
 }
 
 .TextInput {
-    
+
     width: 100%;
 
     resize: none ;
@@ -162,28 +154,25 @@ input:-webkit-autofill:active {
 
     border: 1px solid var(--surface-border);
 
-
     background-color: var(--background);
-    
+
     font-size: clamp(0.75rem, .1vw, 1.5rem);
-    font-family: var(--text-font);  
-    
+    font-family: var(--text-font);
+
     outline: none;
 
     padding: 20px;
 
     color: var(--generaltext-color);
-
-    
-
-
 }
+
 .TextInput::-webkit-scrollbar {
+
     display: none;
 }
 
 .SendButton {
-    
+
     height: 10%;
     width: 100%;
 
@@ -192,7 +181,6 @@ input:-webkit-autofill:active {
     justify-content: center;
 
     gap: 5px;
-
 
     border-radius: 20px;
     border: 1px solid var(--surface-border);
@@ -204,11 +192,11 @@ input:-webkit-autofill:active {
     background-color: var(--generaltext-color);
 
     color: var(--background);
-    
-    font-family: var(--title-font);
-    font-size: clamp(0.8rem, 0.9vw, 1.5rem);
 
-    box-shadow: 0px 0px 5px rgb(0,0,0, 0.5);
+    font-family: var(--title-font);
+    font-size: clamp(1rem, 0.9vw, 1.5rem);
+
+    box-shadow: 0px 0px 5px var(--shadow-color);
 
     font-weight: 500;
 
@@ -228,41 +216,104 @@ input:-webkit-autofill:active {
 
     height: 70%;
     aspect-ratio: 1/1;
-
 }
 
 @media (max-width: 550px) {
+
     .MainContainer {
+
         flex-direction: column;
     }
 
     .ContactContainer {
+
         height: 40%;
         width: 80%;
-        
     }
 
     .LinkContainer {
+
         width: 100%;
-        
     }
 
     .LinkImage {
+
         height: 200%;
     }
 }
 
+.MainContainer {
 
-.MainContainer { width: 100%; height: auto; min-height: 800px; max-height: none; padding: 80px max(24px, calc((100% - 1200px) / 2)); gap: 48px; }
-.ContactContainer { flex: 1; min-width: 0; width: auto; height: auto; }
-.LinkContainer { width: 100%; min-width: 0; min-height: 60px; }
-.LinkImage { width: 30px; height: 30px; object-fit: contain; }
-.ContactInputContainer { height: auto; font-size: .95rem; }
-.ContactInput { font-size: 1rem; }
-.TextInput { min-height: 180px; font-size: .875rem; line-height: 1.6; }
-.SendButton { min-height: 48px; }
-.SendImage { height: 22px; }
+    width: 100%;
+    height: auto;
+    min-height: 800px;
+    max-height: none;
+    padding: 80px max(24px, calc((100% - 1200px) / 2));
+    gap: 48px;
+}
+
+.ContactContainer {
+
+    flex: 1;
+    min-width: 0;
+    width: auto;
+    height: auto;
+}
+
+.LinkContainer {
+
+    width: 100%;
+    min-width: 0;
+    min-height: 60px;
+}
+
+.LinkImage {
+
+    width: 30px;
+    height: 30px;
+    object-fit: contain;
+}
+
+.ContactInputContainer {
+
+    height: auto;
+    font-size: .95rem;
+}
+
+.ContactInput {
+
+    font-size: 1rem;
+}
+
+.TextInput {
+
+    min-height: 180px;
+    font-size: .875rem;
+    line-height: 1.6;
+}
+
+.SendButton {
+
+    min-height: 48px;
+}
+
+.SendImage {
+
+    height: 22px;
+}
+
 @media (max-width: 760px) {
- .MainContainer { flex-direction: column; min-height: auto; align-items: stretch; }
- .ContactContainer { width: 100%; flex: auto; }
+
+    .MainContainer {
+
+        flex-direction: column;
+        min-height: auto;
+        align-items: stretch;
+    }
+
+    .ContactContainer {
+
+        width: 100%;
+        flex: auto;
+    }
 }

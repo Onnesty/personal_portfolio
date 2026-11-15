@@ -1,934 +1,983 @@
 import { useEffect, useRef, type CSSProperties } from 'react';
-import * as THREE from 'three';
+import * as Three from 'three';
 
 interface BadgeData {
-  name: string;
-  role: string;
-  idNumber: string;
-  clearance: string;
-  organization: string;
-  department: string;
-  zone: string;
-  issuedDate: string;
+    name: string;
+    role: string;
+    idNumber: string;
+    clearance: string;
+    organization: string;
+    department: string;
+    zone: string;
+    issuedDate: string;
 }
 
 export interface HangingIdBadgeProps extends Partial<BadgeData> {
-  className?: string;
-  style?: CSSProperties;
+    className?: string;
+    style?: CSSProperties;
 }
 
-function getCanvasContext(canvas: HTMLCanvasElement): CanvasRenderingContext2D {
-  const context = canvas.getContext('2d');
-  if (!context) throw new Error('A 2D canvas context is required to render the badge.');
-  return context;
+function getCanvasContext(Canvas: HTMLCanvasElement): CanvasRenderingContext2D {
+    const Context = Canvas.getContext('2d');
+    if (!Context) throw new Error('A 2D canvas context is required to render the badge.');
+    return Context;
 }
 
-const THEME = {
-  bg: '#0F1319',
-  bg2: '#141920',
-  bg3: '#1a2130',
-  bg4: '#1E2838',
-  text: '#E4EEF8',
-  sky: '#4a9ee8',
-  sky2: '#7EC8F0',
-  border: '#1E3050',
-  border2: '#203457',
-  titleFont: "'Outfit', sans-serif",
-  textFont: "'Onest', sans-serif",
-};
-
-function createRoundedRectPath(ctx: CanvasRenderingContext2D, x: number, y: number, width: number, height: number, radius: number): void {
-  ctx.beginPath();
-  ctx.moveTo(x + radius, y);
-  ctx.lineTo(x + width - radius, y);
-  ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
-  ctx.lineTo(x + width, y + height - radius);
-  ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
-  ctx.lineTo(x + radius, y + height);
-  ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
-  ctx.lineTo(x, y + radius);
-  ctx.quadraticCurveTo(x, y, x + radius, y);
-  ctx.closePath();
+// Badge colors live beside the page palettes in themes.css.
+function GetBadgeTheme() {
+    const Styles = getComputedStyle(document.documentElement);
+    const Color = (Name: string) => Styles.getPropertyValue(`--badge-${Name}`).trim();
+    return {
+        bg: Color('background'),
+        bg2: Color('background-2'),
+        bg3: Color('background-3'),
+        bg4: Color('background-4'),
+        text: Color('text'),
+        muted: Color('muted'),
+        sky: Color('accent'),
+        sky2: Color('accent-2'),
+        border: Color('border'),
+        border2: Color('border-2'),
+        titleFont: "'Outfit', sans-serif",
+        textFont: "'Onest', sans-serif",
+    };
 }
 
-function generateCardTextures(data: BadgeData) {
-  const width = 1024;
-  const height = 1600;
-  const radius = 64;
+function createRoundedRectPath(Ctx: CanvasRenderingContext2D, X: number, Y: number, Width: number, Height: number, Radius: number): void {
+    Ctx.beginPath();
+    Ctx.moveTo(X + Radius, Y);
+    Ctx.lineTo(X + Width - Radius, Y);
+    Ctx.quadraticCurveTo(X + Width, Y, X + Width, Y + Radius);
+    Ctx.lineTo(X + Width, Y + Height - Radius);
+    Ctx.quadraticCurveTo(X + Width, Y + Height, X + Width - Radius, Y + Height);
+    Ctx.lineTo(X + Radius, Y + Height);
+    Ctx.quadraticCurveTo(X, Y + Height, X, Y + Height - Radius);
+    Ctx.lineTo(X, Y + Radius);
+    Ctx.quadraticCurveTo(X, Y, X + Radius, Y);
+    Ctx.closePath();
+}
 
-  // --- FRONT CANVAS ---
-  const frontCanvas = document.createElement('canvas');
-  frontCanvas.width = width;
-  frontCanvas.height = height;
-  const ctx = getCanvasContext(frontCanvas);
+function generateCardTextures(Data: BadgeData) {
+    const Theme = GetBadgeTheme();
+    const Width = 1024;
+    const Height = 1600;
+    const Radius = 64;
 
-  ctx.save();
-  createRoundedRectPath(ctx, 0, 0, width, height, radius);
-  ctx.clip();
+    // --- FRONT CANVAS ---
+    const FrontCanvas = document.createElement('canvas');
+    FrontCanvas.width = Width;
+    FrontCanvas.height = Height;
+    const Ctx = getCanvasContext(FrontCanvas);
 
-  // Base gradient using --background-2 and --background
-  const bgGrad = ctx.createLinearGradient(0, 0, width, height);
-  bgGrad.addColorStop(0, THEME.bg2);
-  bgGrad.addColorStop(0.55, THEME.bg);
-  bgGrad.addColorStop(1, THEME.bg3);
-  ctx.fillStyle = bgGrad;
-  ctx.fillRect(0, 0, width, height);
+    Ctx.save();
+    createRoundedRectPath(Ctx, 0, 0, Width, Height, Radius);
+    Ctx.clip();
 
-  // Subtle architectural grid
-  ctx.strokeStyle = 'rgba(74, 158, 232, 0.06)';
-  ctx.lineWidth = 2;
-  for (let gx = 0; gx < width; gx += 64) {
-    ctx.beginPath();
-    ctx.moveTo(gx, 0);
-    ctx.lineTo(gx, height);
-    ctx.stroke();
-  }
-  for (let gy = 0; gy < height; gy += 64) {
-    ctx.beginPath();
-    ctx.moveTo(0, gy);
-    ctx.lineTo(width, gy);
-    ctx.stroke();
-  }
+    // Base gradient using --background-2 and --background
+    const BgGrad = Ctx.createLinearGradient(0, 0, Width, Height);
+    BgGrad.addColorStop(0, Theme.bg2);
+    BgGrad.addColorStop(0.55, Theme.bg);
+    BgGrad.addColorStop(1, Theme.bg3);
+    Ctx.fillStyle = BgGrad;
+    Ctx.fillRect(0, 0, Width, Height);
 
-  // Top atmospheric sky glow
-  const glow = ctx.createRadialGradient(width * 0.5, 140, 20, width * 0.5, 140, 620);
-  glow.addColorStop(0, 'rgba(74, 158, 232, 0.24)');
-  glow.addColorStop(0.5, 'rgba(126, 200, 240, 0.08)');
-  glow.addColorStop(1, 'rgba(15, 19, 25, 0)');
-  ctx.fillStyle = glow;
-  ctx.fillRect(0, 0, width, 750);
-
-  // Lanyard slot cutout indicator
-  ctx.fillStyle = '#090c10';
-  createRoundedRectPath(ctx, width / 2 - 90, 46, 180, 32, 16);
-  ctx.fill();
-  ctx.strokeStyle = THEME.border2;
-  ctx.lineWidth = 3;
-  ctx.stroke();
-
-  // Header brand & status pill
-  ctx.fillStyle = THEME.sky2;
-  ctx.font = `700 26px ${THEME.titleFont}`;
-  ctx.letterSpacing = '4px';
-  ctx.fillText(data.organization.toUpperCase(), 72, 155);
-  ctx.letterSpacing = '0px';
-
-  // Active status badge
-  ctx.fillStyle = THEME.bg4;
-  createRoundedRectPath(ctx, width - 290, 122, 218, 46, 23);
-  ctx.fill();
-  ctx.strokeStyle = THEME.border2;
-  ctx.lineWidth = 2;
-  ctx.stroke();
-
-  ctx.fillStyle = THEME.sky;
-  ctx.beginPath();
-  ctx.arc(width - 258, 145, 7, 0, Math.PI * 2);
-  ctx.fill();
-
-  ctx.fillStyle = THEME.text;
-  ctx.font = `600 20px ${THEME.textFont}`;
-  ctx.fillText(data.clearance.toUpperCase(), width - 238, 152);
-
-  // Avatar frame (--background-3 & --border-2)
-  const avatarX = 72;
-  const avatarY = 225;
-  const avatarSize = 340;
-
-  ctx.fillStyle = THEME.bg3;
-  createRoundedRectPath(ctx, avatarX, avatarY, avatarSize, avatarSize, 36);
-  ctx.fill();
-  ctx.strokeStyle = THEME.border2;
-  ctx.lineWidth = 3;
-  ctx.stroke();
-
-  // Stylized geometric silhouette inside avatar
-  ctx.save();
-  createRoundedRectPath(ctx, avatarX, avatarY, avatarSize, avatarSize, 36);
-  ctx.clip();
-
-  const avGrad = ctx.createLinearGradient(avatarX, avatarY, avatarX + avatarSize, avatarY + avatarSize);
-  avGrad.addColorStop(0, THEME.bg4);
-  avGrad.addColorStop(1, THEME.bg);
-  ctx.fillStyle = avGrad;
-  ctx.fillRect(avatarX, avatarY, avatarSize, avatarSize);
-
-  // Accent ring
-  ctx.strokeStyle = 'rgba(126, 200, 240, 0.25)';
-  ctx.lineWidth = 2;
-  ctx.beginPath();
-  ctx.arc(avatarX + avatarSize / 2, avatarY + avatarSize / 2, 125, 0, Math.PI * 2);
-  ctx.stroke();
-
-  // Head & shoulders vector
-  ctx.fillStyle = THEME.sky;
-  ctx.beginPath();
-  ctx.arc(avatarX + avatarSize / 2, avatarY + 135, 54, 0, Math.PI * 2);
-  ctx.fill();
-
-  ctx.fillStyle = THEME.sky2;
-  ctx.beginPath();
-  ctx.arc(avatarX + avatarSize / 2, avatarY + 325, 118, Math.PI, 0);
-  ctx.fill();
-  ctx.restore();
-
-  // Metallic EMV Smart Chip beside avatar
-  const chipX = 465;
-  const chipY = 245;
-  const chipW = 124;
-  const chipH = 96;
-  const chipGrad = ctx.createLinearGradient(chipX, chipY, chipX + chipW, chipY + chipH);
-  chipGrad.addColorStop(0, THEME.sky2);
-  chipGrad.addColorStop(0.5, THEME.sky);
-  chipGrad.addColorStop(1, '#2b6cb0');
-  ctx.fillStyle = chipGrad;
-  createRoundedRectPath(ctx, chipX, chipY, chipW, chipH, 16);
-  ctx.fill();
-
-  ctx.strokeStyle = 'rgba(15, 19, 25, 0.45)';
-  ctx.lineWidth = 2.5;
-  ctx.beginPath();
-  ctx.moveTo(chipX + 42, chipY);
-  ctx.lineTo(chipX + 42, chipY + chipH);
-  ctx.moveTo(chipX + 82, chipY);
-  ctx.lineTo(chipX + 82, chipY + chipH);
-  ctx.moveTo(chipX, chipY + 32);
-  ctx.lineTo(chipX + chipW, chipY + 32);
-  ctx.moveTo(chipX, chipY + 64);
-  ctx.lineTo(chipX + chipW, chipY + 64);
-  ctx.stroke();
-
-  // Credential metadata right of avatar
-  ctx.fillStyle = 'rgba(228, 238, 248, 0.55)';
-  ctx.font = `500 22px ${THEME.textFont}`;
-  ctx.fillText('CREDENTIAL ID', 465, 405);
-
-  ctx.fillStyle = THEME.sky2;
-  ctx.font = `700 34px ${THEME.titleFont}`;
-  ctx.fillText(data.idNumber, 465, 448);
-
-  ctx.fillStyle = 'rgba(228, 238, 248, 0.55)';
-  ctx.font = `500 22px ${THEME.textFont}`;
-  ctx.fillText('ISSUED', 465, 512);
-
-  ctx.fillStyle = THEME.text;
-  ctx.font = `600 28px ${THEME.textFont}`;
-  ctx.fillText(data.issuedDate, 465, 550);
-
-  // Divider line
-  ctx.strokeStyle = THEME.border;
-  ctx.lineWidth = 2;
-  ctx.beginPath();
-  ctx.moveTo(72, 635);
-  ctx.lineTo(width - 72, 635);
-  ctx.stroke();
-
-  // Holder Name & Title
-  ctx.fillStyle = THEME.text;
-  ctx.font = `700 76px ${THEME.titleFont}`;
-  ctx.fillText(data.name, 72, 745);
-
-  ctx.fillStyle = THEME.sky;
-  ctx.font = `500 36px ${THEME.textFont}`;
-  ctx.fillText(data.role, 72, 808);
-
-  // Info Cards Grid
-  const boxY = 885;
-  const boxH = 155;
-  const boxW = (width - 144 - 28) / 2;
-
-  // Box 1: Department
-  ctx.fillStyle = THEME.bg3;
-  createRoundedRectPath(ctx, 72, boxY, boxW, boxH, 24);
-  ctx.fill();
-  ctx.strokeStyle = THEME.border;
-  ctx.lineWidth = 2;
-  ctx.stroke();
-
-  ctx.fillStyle = 'rgba(228, 238, 248, 0.55)';
-  ctx.font = `500 22px ${THEME.textFont}`;
-  ctx.fillText('DEPARTMENT', 102, boxY + 52);
-
-  ctx.fillStyle = THEME.text;
-  ctx.font = `600 32px ${THEME.titleFont}`;
-  ctx.fillText(data.department, 102, boxY + 106);
-
-  // Box 2: Access Zone
-  ctx.fillStyle = THEME.bg3;
-  createRoundedRectPath(ctx, 72 + boxW + 28, boxY, boxW, boxH, 24);
-  ctx.fill();
-  ctx.strokeStyle = THEME.border;
-  ctx.lineWidth = 2;
-  ctx.stroke();
-
-  ctx.fillStyle = 'rgba(228, 238, 248, 0.55)';
-  ctx.font = `500 22px ${THEME.textFont}`;
-  ctx.fillText('ACCESS ZONE', 102 + boxW + 28, boxY + 52);
-
-  ctx.fillStyle = THEME.sky2;
-  ctx.font = `600 32px ${THEME.titleFont}`;
-  ctx.fillText(data.zone, 102 + boxW + 28, boxY + 106);
-
-  // Bottom Barcode & Verification Footer
-  const footerY = 1120;
-  ctx.fillStyle = THEME.bg2;
-  createRoundedRectPath(ctx, 72, footerY, width - 144, 390, 28);
-  ctx.fill();
-  ctx.strokeStyle = THEME.border2;
-  ctx.lineWidth = 2;
-  ctx.stroke();
-
-  // Procedural crisp barcode
-  const barStartX = 116;
-  const barY = footerY + 54;
-  const barH = 140;
-  let cursorX = barStartX;
-  const pattern = [4, 2, 8, 3, 2, 6, 4, 2, 10, 2, 4, 6, 2, 3, 8, 2, 4, 2, 6, 4, 8, 2, 3, 4, 6, 2, 8, 4, 2, 6, 3, 4, 8, 2];
-  pattern.forEach((w, idx) => {
-    if (idx % 2 === 0) {
-      ctx.fillStyle = idx % 4 === 0 ? THEME.text : THEME.sky2;
-      ctx.fillRect(cursorX, barY, w * 4.2, barH);
+    // Subtle architectural grid
+    Ctx.strokeStyle = 'rgba(74, 158, 232, 0.06)';
+    Ctx.lineWidth = 2;
+    for (let Gx = 0;Gx < Width;Gx += 64) {
+        Ctx.beginPath();
+        Ctx.moveTo(Gx, 0);
+        Ctx.lineTo(Gx, Height);
+        Ctx.stroke();
     }
-    cursorX += w * 4.8;
-  });
-
-  // Serial hash text under barcode
-  ctx.fillStyle = 'rgba(228, 238, 248, 0.65)';
-  ctx.font = `500 24px monospace`;
-  ctx.fillText(`SHA256 // ${data.idNumber}-VERIFIED-2026`, 116, barY + barH + 52);
-
-  // Bottom security micro-strip
-  ctx.fillStyle = THEME.sky;
-  ctx.fillRect(116, footerY + 305, 140, 8);
-  ctx.fillStyle = THEME.border2;
-  ctx.fillRect(272, footerY + 305, width - 388, 8);
-
-  // Inner card border rim
-  ctx.strokeStyle = THEME.border2;
-  ctx.lineWidth = 6;
-  createRoundedRectPath(ctx, 3, 3, width - 6, height - 6, radius);
-  ctx.stroke();
-  ctx.restore();
-
-  // --- BACK CANVAS ---
-  const backCanvas = document.createElement('canvas');
-  backCanvas.width = width;
-  backCanvas.height = height;
-  const bctx = getCanvasContext(backCanvas);
-
-  bctx.save();
-  createRoundedRectPath(bctx, 0, 0, width, height, radius);
-  bctx.clip();
-
-  bctx.fillStyle = THEME.bg;
-  bctx.fillRect(0, 0, width, height);
-
-  // Lanyard slot cutout
-  bctx.fillStyle = '#090c10';
-  createRoundedRectPath(bctx, width / 2 - 90, 46, 180, 32, 16);
-  bctx.fill();
-  bctx.strokeStyle = THEME.border2;
-  bctx.lineWidth = 3;
-  bctx.stroke();
-
-  // Magnetic Stripe
-  const magGrad = bctx.createLinearGradient(0, 140, width, 280);
-  magGrad.addColorStop(0, '#070a0e');
-  magGrad.addColorStop(0.5, THEME.bg3);
-  magGrad.addColorStop(1, '#070a0e');
-  bctx.fillStyle = magGrad;
-  bctx.fillRect(0, 145, width, 135);
-
-  bctx.strokeStyle = THEME.border;
-  bctx.lineWidth = 2;
-  bctx.beginPath();
-  bctx.moveTo(0, 145);
-  bctx.lineTo(width, 145);
-  bctx.moveTo(0, 280);
-  bctx.lineTo(width, 280);
-  bctx.stroke();
-
-  // Signature Strip
-  bctx.fillStyle = 'rgba(228, 238, 248, 0.55)';
-  bctx.font = `600 22px ${THEME.textFont}`;
-  bctx.fillText('AUTHORIZED SIGNATURE', 72, 365);
-
-  bctx.fillStyle = THEME.bg3;
-  createRoundedRectPath(bctx, 72, 390, width - 144, 115, 18);
-  bctx.fill();
-  bctx.strokeStyle = THEME.border2;
-  bctx.lineWidth = 2;
-  bctx.stroke();
-
-  // Cursive-style vector signature
-  bctx.strokeStyle = THEME.sky2;
-  bctx.lineWidth = 4;
-  bctx.beginPath();
-  bctx.moveTo(120, 465);
-  bctx.bezierCurveTo(170, 395, 210, 490, 265, 435);
-  bctx.bezierCurveTo(310, 390, 340, 480, 415, 440);
-  bctx.bezierCurveTo(465, 415, 510, 465, 595, 445);
-  bctx.stroke();
-
-  // Security Policy Terms
-  bctx.fillStyle = THEME.text;
-  bctx.font = `700 30px ${THEME.titleFont}`;
-  bctx.fillText('SECURITY & ACCESS PROTOCOL', 72, 600);
-
-  const terms = [
-    '1. This credential remains the property of the issuing organization.',
-    '2. Must be worn visibly at all times within restricted facilities.',
-    '3. Unauthorized duplication, transfer, or alteration is prohibited.',
-    '4. Report lost or compromised credentials immediately to security.',
-  ];
-
-  bctx.fillStyle = 'rgba(228, 238, 248, 0.72)';
-  bctx.font = `400 25px ${THEME.textFont}`;
-  terms.forEach((line, i) => {
-    bctx.fillText(line, 72, 665 + i * 54);
-  });
-
-  // Procedural Matrix / QR Block
-  const qrSize = 240;
-  const qrX = 72;
-  const qrY = 940;
-  bctx.fillStyle = THEME.bg2;
-  createRoundedRectPath(bctx, qrX, qrY, qrSize, qrSize, 24);
-  bctx.fill();
-  bctx.strokeStyle = THEME.border2;
-  bctx.lineWidth = 2;
-  bctx.stroke();
-
-  const cells = 9;
-  const cellSize = (qrSize - 48) / cells;
-  for (let r = 0; r < cells; r++) {
-    for (let c = 0; c < cells; c++) {
-      if ((r * 7 + c * 13) % 3 === 0 || (r < 2 && c < 2) || (r > 6 && c > 6)) {
-        bctx.fillStyle = (r + c) % 2 === 0 ? THEME.sky : THEME.text;
-        bctx.fillRect(qrX + 24 + c * cellSize, qrY + 24 + r * cellSize, cellSize - 3, cellSize - 3);
-      }
+    for (let Gy = 0;Gy < Height;Gy += 64) {
+        Ctx.beginPath();
+        Ctx.moveTo(0, Gy);
+        Ctx.lineTo(Width, Gy);
+        Ctx.stroke();
     }
-  }
 
-  // Emergency / Return Contact Info next to QR
-  bctx.fillStyle = THEME.sky2;
-  bctx.font = `700 26px ${THEME.titleFont}`;
-  bctx.fillText('ENCRYPTED NFC ENABLED', 350, 995);
+    // Top atmospheric sky glow
+    const Glow = Ctx.createRadialGradient(Width * 0.5, 140, 20, Width * 0.5, 140, 620);
+    Glow.addColorStop(0, 'rgba(74, 158, 232, 0.24)');
+    Glow.addColorStop(0.5, 'rgba(126, 200, 240, 0.08)');
+    Glow.addColorStop(1, 'rgba(15, 19, 25, 0)');
+    Ctx.fillStyle = Glow;
+    Ctx.fillRect(0, 0, Width, 750);
 
-  bctx.fillStyle = 'rgba(228, 238, 248, 0.7)';
-  bctx.font = `400 24px ${THEME.textFont}`;
-  bctx.fillText('Tap badge against any Level-3', 350, 1045);
-  bctx.fillText('biometric reader for instant auth.', 350, 1082);
+    // Lanyard slot cutout indicator
+    Ctx.fillStyle = '#090c10';
+    createRoundedRectPath(Ctx, Width / 2 - 90, 46, 180, 32, 16);
+    Ctx.fill();
+    Ctx.strokeStyle = Theme.border2;
+    Ctx.lineWidth = 3;
+    Ctx.stroke();
 
-  bctx.fillStyle = THEME.sky;
-  bctx.font = `600 24px ${THEME.textFont}`;
-  bctx.fillText(`ID: ${data.idNumber}`, 350, 1145);
+    // Header brand & status pill
+    Ctx.fillStyle = Theme.sky2;
+    Ctx.font = `700 26px ${Theme.titleFont}`;
+    Ctx.letterSpacing = '4px';
+    Ctx.fillText(Data.organization.toUpperCase(), 72, 155);
+    Ctx.letterSpacing = '0px';
 
-  // Bottom wordmark
-  bctx.fillStyle = 'rgba(228, 238, 248, 0.4)';
-  bctx.font = `700 24px ${THEME.titleFont}`;
-  bctx.fillText(`${data.organization.toUpperCase()} // ACCESS CONTROL`, 72, 1485);
+    // Active status badge
+    Ctx.fillStyle = Theme.bg4;
+    createRoundedRectPath(Ctx, Width - 290, 122, 218, 46, 23);
+    Ctx.fill();
+    Ctx.strokeStyle = Theme.border2;
+    Ctx.lineWidth = 2;
+    Ctx.stroke();
 
-  bctx.strokeStyle = THEME.border2;
-  bctx.lineWidth = 6;
-  createRoundedRectPath(bctx, 3, 3, width - 6, height - 6, radius);
-  bctx.stroke();
-  bctx.restore();
+    Ctx.fillStyle = Theme.sky;
+    Ctx.beginPath();
+    Ctx.arc(Width - 258, 145, 7, 0, Math.PI * 2);
+    Ctx.fill();
 
-  const frontTex = new THREE.CanvasTexture(frontCanvas);
-  frontTex.colorSpace = THREE.SRGBColorSpace;
-  frontTex.anisotropy = 8;
+    Ctx.fillStyle = Theme.text;
+    Ctx.font = `600 20px ${Theme.textFont}`;
+    Ctx.fillText(Data.clearance.toUpperCase(), Width - 238, 152);
 
-  const backTex = new THREE.CanvasTexture(backCanvas);
-  backTex.colorSpace = THREE.SRGBColorSpace;
-  backTex.anisotropy = 8;
+    // Avatar frame (--background-3 & --border-2)
+    const AvatarX = 72;
+    const AvatarY = 225;
+    const AvatarSize = 340;
 
-  return { frontTex, backTex };
+    Ctx.fillStyle = Theme.bg3;
+    createRoundedRectPath(Ctx, AvatarX, AvatarY, AvatarSize, AvatarSize, 36);
+    Ctx.fill();
+    Ctx.strokeStyle = Theme.border2;
+    Ctx.lineWidth = 3;
+    Ctx.stroke();
+
+    // Stylized geometric silhouette inside avatar
+    Ctx.save();
+    createRoundedRectPath(Ctx, AvatarX, AvatarY, AvatarSize, AvatarSize, 36);
+    Ctx.clip();
+
+    const AvGrad = Ctx.createLinearGradient(AvatarX, AvatarY, AvatarX + AvatarSize, AvatarY + AvatarSize);
+    AvGrad.addColorStop(0, Theme.bg4);
+    AvGrad.addColorStop(1, Theme.bg);
+    Ctx.fillStyle = AvGrad;
+    Ctx.fillRect(AvatarX, AvatarY, AvatarSize, AvatarSize);
+
+    // Accent ring
+    Ctx.strokeStyle = 'rgba(126, 200, 240, 0.25)';
+    Ctx.lineWidth = 2;
+    Ctx.beginPath();
+    Ctx.arc(AvatarX + AvatarSize / 2, AvatarY + AvatarSize / 2, 125, 0, Math.PI * 2);
+    Ctx.stroke();
+
+    // Head & shoulders vector
+    Ctx.fillStyle = Theme.sky;
+    Ctx.beginPath();
+    Ctx.arc(AvatarX + AvatarSize / 2, AvatarY + 135, 54, 0, Math.PI * 2);
+    Ctx.fill();
+
+    Ctx.fillStyle = Theme.sky2;
+    Ctx.beginPath();
+    Ctx.arc(AvatarX + AvatarSize / 2, AvatarY + 325, 118, Math.PI, 0);
+    Ctx.fill();
+    Ctx.restore();
+
+    // Metallic EMV Smart Chip beside avatar
+    const ChipX = 465;
+    const ChipY = 245;
+    const ChipW = 124;
+    const ChipH = 96;
+    const ChipGrad = Ctx.createLinearGradient(ChipX, ChipY, ChipX + ChipW, ChipY + ChipH);
+    ChipGrad.addColorStop(0, Theme.sky2);
+    ChipGrad.addColorStop(0.5, Theme.sky);
+    ChipGrad.addColorStop(1, '#2b6cb0');
+    Ctx.fillStyle = ChipGrad;
+    createRoundedRectPath(Ctx, ChipX, ChipY, ChipW, ChipH, 16);
+    Ctx.fill();
+
+    Ctx.strokeStyle = 'rgba(15, 19, 25, 0.45)';
+    Ctx.lineWidth = 2.5;
+    Ctx.beginPath();
+    Ctx.moveTo(ChipX + 42, ChipY);
+    Ctx.lineTo(ChipX + 42, ChipY + ChipH);
+    Ctx.moveTo(ChipX + 82, ChipY);
+    Ctx.lineTo(ChipX + 82, ChipY + ChipH);
+    Ctx.moveTo(ChipX, ChipY + 32);
+    Ctx.lineTo(ChipX + ChipW, ChipY + 32);
+    Ctx.moveTo(ChipX, ChipY + 64);
+    Ctx.lineTo(ChipX + ChipW, ChipY + 64);
+    Ctx.stroke();
+
+    // Credential metadata right of avatar
+    Ctx.fillStyle = Theme.muted;
+    Ctx.font = `500 22px ${Theme.textFont}`;
+    Ctx.fillText('CREDENTIAL ID', 465, 405);
+
+    Ctx.fillStyle = Theme.sky2;
+    Ctx.font = `700 34px ${Theme.titleFont}`;
+    Ctx.fillText(Data.idNumber, 465, 448);
+
+    Ctx.fillStyle = Theme.muted;
+    Ctx.font = `500 22px ${Theme.textFont}`;
+    Ctx.fillText('ISSUED', 465, 512);
+
+    Ctx.fillStyle = Theme.text;
+    Ctx.font = `600 28px ${Theme.textFont}`;
+    Ctx.fillText(Data.issuedDate, 465, 550);
+
+    // Divider line
+    Ctx.strokeStyle = Theme.border;
+    Ctx.lineWidth = 2;
+    Ctx.beginPath();
+    Ctx.moveTo(72, 635);
+    Ctx.lineTo(Width - 72, 635);
+    Ctx.stroke();
+
+    // Holder Name & Title
+    Ctx.fillStyle = Theme.text;
+    Ctx.font = `700 76px ${Theme.titleFont}`;
+    Ctx.fillText(Data.name, 72, 745);
+
+    Ctx.fillStyle = Theme.sky;
+    Ctx.font = `500 36px ${Theme.textFont}`;
+    Ctx.fillText(Data.role, 72, 808);
+
+    // Info Cards Grid
+    const BoxY = 885;
+    const BoxH = 155;
+    const BoxW = (Width - 144 - 28) / 2;
+
+    // Box 1: Department
+    Ctx.fillStyle = Theme.bg3;
+    createRoundedRectPath(Ctx, 72, BoxY, BoxW, BoxH, 24);
+    Ctx.fill();
+    Ctx.strokeStyle = Theme.border;
+    Ctx.lineWidth = 2;
+    Ctx.stroke();
+
+    Ctx.fillStyle = Theme.muted;
+    Ctx.font = `500 22px ${Theme.textFont}`;
+    Ctx.fillText('DEPARTMENT', 102, BoxY + 52);
+
+    Ctx.fillStyle = Theme.text;
+    Ctx.font = `600 32px ${Theme.titleFont}`;
+    Ctx.fillText(Data.department, 102, BoxY + 106);
+
+    // Box 2: Access Zone
+    Ctx.fillStyle = Theme.bg3;
+    createRoundedRectPath(Ctx, 72 + BoxW + 28, BoxY, BoxW, BoxH, 24);
+    Ctx.fill();
+    Ctx.strokeStyle = Theme.border;
+    Ctx.lineWidth = 2;
+    Ctx.stroke();
+
+    Ctx.fillStyle = Theme.muted;
+    Ctx.font = `500 22px ${Theme.textFont}`;
+    Ctx.fillText('ACCESS ZONE', 102 + BoxW + 28, BoxY + 52);
+
+    Ctx.fillStyle = Theme.sky2;
+    Ctx.font = `600 32px ${Theme.titleFont}`;
+    Ctx.fillText(Data.zone, 102 + BoxW + 28, BoxY + 106);
+
+    // Bottom Barcode & Verification Footer
+    const FooterY = 1120;
+    Ctx.fillStyle = Theme.bg2;
+    createRoundedRectPath(Ctx, 72, FooterY, Width - 144, 390, 28);
+    Ctx.fill();
+    Ctx.strokeStyle = Theme.border2;
+    Ctx.lineWidth = 2;
+    Ctx.stroke();
+
+    // Procedural crisp barcode
+    const BarStartX = 116;
+    const BarY = FooterY + 54;
+    const BarH = 140;
+    let CursorX = BarStartX;
+    const Pattern = [4, 2, 8, 3, 2, 6, 4, 2, 10, 2, 4, 6, 2, 3, 8, 2, 4, 2, 6, 4, 8, 2, 3, 4, 6, 2, 8, 4, 2, 6, 3, 4, 8, 2];
+    Pattern.forEach((W, Idx) => {
+        if (Idx % 2 === 0) {
+            Ctx.fillStyle = Idx % 4 === 0 ? Theme.text : Theme.sky2;
+            Ctx.fillRect(CursorX, BarY, W * 4.2, BarH);
+        }
+        CursorX += W * 4.8;
+    });
+
+    // Serial hash text under barcode
+    Ctx.fillStyle = Theme.muted;
+    Ctx.font = `500 24px monospace`;
+    Ctx.fillText(`SHA256 // ${Data.idNumber}-VERIFIED-2026`, 116, BarY + BarH + 52);
+
+    // Bottom security micro-strip
+    Ctx.fillStyle = Theme.sky;
+    Ctx.fillRect(116, FooterY + 305, 140, 8);
+    Ctx.fillStyle = Theme.border2;
+    Ctx.fillRect(272, FooterY + 305, Width - 388, 8);
+
+    // Inner card border rim
+    Ctx.strokeStyle = Theme.border2;
+    Ctx.lineWidth = 6;
+    createRoundedRectPath(Ctx, 3, 3, Width - 6, Height - 6, Radius);
+    Ctx.stroke();
+    Ctx.restore();
+
+    // --- BACK CANVAS ---
+    const BackCanvas = document.createElement('canvas');
+    BackCanvas.width = Width;
+    BackCanvas.height = Height;
+    const Bctx = getCanvasContext(BackCanvas);
+
+    Bctx.save();
+    createRoundedRectPath(Bctx, 0, 0, Width, Height, Radius);
+    Bctx.clip();
+
+    Bctx.fillStyle = Theme.bg;
+    Bctx.fillRect(0, 0, Width, Height);
+
+    // Lanyard slot cutout
+    Bctx.fillStyle = '#090c10';
+    createRoundedRectPath(Bctx, Width / 2 - 90, 46, 180, 32, 16);
+    Bctx.fill();
+    Bctx.strokeStyle = Theme.border2;
+    Bctx.lineWidth = 3;
+    Bctx.stroke();
+
+    // Magnetic Stripe
+    const MagGrad = Bctx.createLinearGradient(0, 140, Width, 280);
+    MagGrad.addColorStop(0, '#070a0e');
+    MagGrad.addColorStop(0.5, Theme.bg3);
+    MagGrad.addColorStop(1, '#070a0e');
+    Bctx.fillStyle = MagGrad;
+    Bctx.fillRect(0, 145, Width, 135);
+
+    Bctx.strokeStyle = Theme.border;
+    Bctx.lineWidth = 2;
+    Bctx.beginPath();
+    Bctx.moveTo(0, 145);
+    Bctx.lineTo(Width, 145);
+    Bctx.moveTo(0, 280);
+    Bctx.lineTo(Width, 280);
+    Bctx.stroke();
+
+    // Signature Strip
+    Bctx.fillStyle = Theme.muted;
+    Bctx.font = `600 22px ${Theme.textFont}`;
+    Bctx.fillText('AUTHORIZED SIGNATURE', 72, 365);
+
+    Bctx.fillStyle = Theme.bg3;
+    createRoundedRectPath(Bctx, 72, 390, Width - 144, 115, 18);
+    Bctx.fill();
+    Bctx.strokeStyle = Theme.border2;
+    Bctx.lineWidth = 2;
+    Bctx.stroke();
+
+    // Cursive-style vector signature
+    Bctx.strokeStyle = Theme.sky2;
+    Bctx.lineWidth = 4;
+    Bctx.beginPath();
+    Bctx.moveTo(120, 465);
+    Bctx.bezierCurveTo(170, 395, 210, 490, 265, 435);
+    Bctx.bezierCurveTo(310, 390, 340, 480, 415, 440);
+    Bctx.bezierCurveTo(465, 415, 510, 465, 595, 445);
+    Bctx.stroke();
+
+    // Security Policy Terms
+    Bctx.fillStyle = Theme.text;
+    Bctx.font = `700 30px ${Theme.titleFont}`;
+    Bctx.fillText('SECURITY & ACCESS PROTOCOL', 72, 600);
+
+    const Terms = [
+        '1. This credential remains the property of the issuing organization.',
+        '2. Must be worn visibly at all times within restricted facilities.',
+        '3. Unauthorized duplication, transfer, or alteration is prohibited.',
+        '4. Report lost or compromised credentials immediately to security.',
+    ];
+
+    Bctx.fillStyle = Theme.muted;
+    Bctx.font = `400 25px ${Theme.textFont}`;
+    Terms.forEach((Line, I) => {
+        Bctx.fillText(Line, 72, 665 + I * 54);
+    });
+
+    // Procedural Matrix / QR Block
+    const QrSize = 240;
+    const QrX = 72;
+    const QrY = 940;
+    Bctx.fillStyle = Theme.bg2;
+    createRoundedRectPath(Bctx, QrX, QrY, QrSize, QrSize, 24);
+    Bctx.fill();
+    Bctx.strokeStyle = Theme.border2;
+    Bctx.lineWidth = 2;
+    Bctx.stroke();
+
+    const Cells = 9;
+    const CellSize = (QrSize - 48) / Cells;
+    for (let R = 0;R < Cells;R++) {
+        for (let C = 0;C < Cells;C++) {
+            if ((R * 7 + C * 13) % 3 === 0 || (R < 2 && C < 2) || (R > 6 && C > 6)) {
+                Bctx.fillStyle = (R + C) % 2 === 0 ? Theme.sky : Theme.text;
+                Bctx.fillRect(QrX + 24 + C * CellSize, QrY + 24 + R * CellSize, CellSize - 3, CellSize - 3);
+            }
+        }
+    }
+
+    // Emergency / Return Contact Info next to QR
+    Bctx.fillStyle = Theme.sky2;
+    Bctx.font = `700 26px ${Theme.titleFont}`;
+    Bctx.fillText('ENCRYPTED NFC ENABLED', 350, 995);
+
+    Bctx.fillStyle = Theme.muted;
+    Bctx.font = `400 24px ${Theme.textFont}`;
+    Bctx.fillText('Tap badge against any Level-3', 350, 1045);
+    Bctx.fillText('biometric reader for instant auth.', 350, 1082);
+
+    Bctx.fillStyle = Theme.sky;
+    Bctx.font = `600 24px ${Theme.textFont}`;
+    Bctx.fillText(`ID: ${Data.idNumber}`, 350, 1145);
+
+    // Bottom wordmark
+    Bctx.fillStyle = Theme.muted;
+    Bctx.font = `700 24px ${Theme.titleFont}`;
+    Bctx.fillText(`${Data.organization.toUpperCase()} // ACCESS CONTROL`, 72, 1485);
+
+    Bctx.strokeStyle = Theme.border2;
+    Bctx.lineWidth = 6;
+    createRoundedRectPath(Bctx, 3, 3, Width - 6, Height - 6, Radius);
+    Bctx.stroke();
+    Bctx.restore();
+
+    const FrontTex = new Three.CanvasTexture(FrontCanvas);
+    FrontTex.colorSpace = Three.SRGBColorSpace;
+    FrontTex.anisotropy = 8;
+
+    const BackTex = new Three.CanvasTexture(BackCanvas);
+    BackTex.colorSpace = Three.SRGBColorSpace;
+    BackTex.anisotropy = 8;
+
+    return { frontTex: FrontTex, backTex: BackTex };
 }
 
 function generateLanyardTexture() {
-  const canvas = document.createElement('canvas');
-  canvas.width = 256;
-  canvas.height = 1024;
-  const ctx = getCanvasContext(canvas);
+    const Theme = GetBadgeTheme();
+    const Canvas = document.createElement('canvas');
+    Canvas.width = 256;
+    Canvas.height = 1024;
+    const Ctx = getCanvasContext(Canvas);
 
-  // Woven strap base (--background-4)
-  ctx.fillStyle = THEME.bg4;
-  ctx.fillRect(0, 0, 256, 1024);
+    // Woven strap base (--background-4)
+    Ctx.fillStyle = Theme.bg4;
+    Ctx.fillRect(0, 0, 256, 1024);
 
-  // Subtle diagonal nylon weave
-  ctx.strokeStyle = 'rgba(228, 238, 248, 0.05)';
-  ctx.lineWidth = 2;
-  for (let y = -256; y < 1280; y += 10) {
-    ctx.beginPath();
-    ctx.moveTo(0, y);
-    ctx.lineTo(256, y + 128);
-    ctx.stroke();
-  }
+    // Subtle diagonal nylon weave
+    Ctx.strokeStyle = 'rgba(228, 238, 248, 0.05)';
+    Ctx.lineWidth = 2;
+    for (let Y = -256;Y < 1280;Y += 10) {
+        Ctx.beginPath();
+        Ctx.moveTo(0, Y);
+        Ctx.lineTo(256, Y + 128);
+        Ctx.stroke();
+    }
 
-  // Sky accent edge stitching
-  ctx.fillStyle = THEME.sky;
-  ctx.fillRect(14, 0, 6, 1024);
-  ctx.fillRect(236, 0, 6, 1024);
+    // Sky accent edge stitching
+    Ctx.fillStyle = Theme.sky;
+    Ctx.fillRect(14, 0, 6, 1024);
+    Ctx.fillRect(236, 0, 6, 1024);
 
-  // Center subtle stripe
-  ctx.fillStyle = 'rgba(126, 200, 240, 0.16)';
-  ctx.fillRect(118, 0, 20, 1024);
+    // Center subtle stripe
+    Ctx.fillStyle = 'rgba(126, 200, 240, 0.16)';
+    Ctx.fillRect(118, 0, 20, 1024);
 
-  const tex = new THREE.CanvasTexture(canvas);
-  tex.colorSpace = THREE.SRGBColorSpace;
-  tex.wrapS = THREE.RepeatWrapping;
-  tex.wrapT = THREE.RepeatWrapping;
-  tex.repeat.set(1, 3);
-  return tex;
+    const Tex = new Three.CanvasTexture(Canvas);
+    Tex.colorSpace = Three.SRGBColorSpace;
+    Tex.wrapS = Three.RepeatWrapping;
+    Tex.wrapT = Three.RepeatWrapping;
+    Tex.repeat.set(1, 3);
+    return Tex;
 }
 
 export default function HangingIdBadge({
-  name = 'ELENA ROSTOVA',
-  role = 'Principal Systems Architect',
-  idNumber = 'NX-8842-90',
-  clearance = 'LEVEL 04',
-  organization = 'AETHER DYNAMICS',
-  department = 'Core Infrastructure',
-  zone = 'SECTOR 7G',
-  issuedDate = 'NOV 2026',
-  className = '',
-  style = {},
+    name: Name = 'ELENA ROSTOVA',
+    role: Role = 'Principal Systems Architect',
+    idNumber: IdNumber = 'NX-8842-90',
+    clearance: Clearance = 'LEVEL 04',
+    organization: Organization = 'AETHER DYNAMICS',
+    department: Department = 'Core Infrastructure',
+    zone: Zone = 'SECTOR 7G',
+    issuedDate: IssuedDate = 'NOV 2026',
+    className: ClassName = '',
+    style: Style = {},
 }: HangingIdBadgeProps = {}) {
-  const containerRef = useRef<HTMLDivElement>(null);
+    const ContainerRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    const container = containerRef.current;
-    if (!container) return;
+    useEffect(() => {
+        const Container = ContainerRef.current;
+        if (!Container) return;
+        const Theme = GetBadgeTheme();
 
-    const width = container.clientWidth || 500;
-    const height = container.clientHeight || 650;
+        const Width = Container.clientWidth || 500;
+        const Height = Container.clientHeight || 650;
 
-    // Scene & Transparent Renderer
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(36, width / height, 0.1, 100);
-    camera.position.set(0, -0.35, 8.2);
+        // Scene & Transparent Renderer
+        const Scene = new Three.Scene();
+        const Camera = new Three.PerspectiveCamera(36, Width / Height, 0.1, 100);
+        Camera.position.set(0, -0.35, 8.2);
 
-    const renderer = new THREE.WebGLRenderer({
-      antialias: true,
-      alpha: true,
-      powerPreference: 'high-performance',
-    });
-    renderer.setSize(width, height);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.15;
-    container.appendChild(renderer.domElement);
+        const Renderer = new Three.WebGLRenderer({
+            antialias: true,
+            alpha: true,
+            powerPreference: 'high-performance',
+        });
+        Renderer.setSize(Width, Height);
+        Renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        Renderer.toneMapping = Three.ACESFilmicToneMapping;
+        Renderer.toneMappingExposure = 1.15;
+        Container.appendChild(Renderer.domElement);
 
-    // Studio Lighting tailored to --sky and --sky-2
-    const ambientLight = new THREE.AmbientLight(0xe4eef8, 0.9);
-    scene.add(ambientLight);
+        // Studio Lighting tailored to --sky and --sky-2
+        const AmbientLight = new Three.AmbientLight(0xe4eef8, 0.9);
+        Scene.add(AmbientLight);
 
-    const keyLight = new THREE.DirectionalLight(0xffffff, 1.8);
-    keyLight.position.set(4, 6, 7);
-    scene.add(keyLight);
+        const KeyLight = new Three.DirectionalLight(0xffffff, 1.8);
+        KeyLight.position.set(4, 6, 7);
+        Scene.add(KeyLight);
 
-    const skyRimLight = new THREE.PointLight(0x4a9ee8, 4.5, 18);
-    skyRimLight.position.set(-4.5, 2.5, 4);
-    scene.add(skyRimLight);
+        const SkyRimLight = new Three.PointLight(0x4a9ee8, 4.5, 18);
+        SkyRimLight.position.set(-4.5, 2.5, 4);
+        Scene.add(SkyRimLight);
 
-    const iceRimLight = new THREE.PointLight(0x7ec8f0, 3.2, 16);
-    iceRimLight.position.set(4.5, -3.5, 3.5);
-    scene.add(iceRimLight);
+        const IceRimLight = new Three.PointLight(0x7ec8f0, 3.2, 16);
+        IceRimLight.position.set(4.5, -3.5, 3.5);
+        Scene.add(IceRimLight);
 
-    // Textures
-    const { frontTex, backTex } = generateCardTextures({
-      name,
-      role,
-      idNumber,
-      clearance,
-      organization,
-      department,
-      zone,
-      issuedDate,
-    });
-    const lanyardTex = generateLanyardTexture();
+        // Textures
+        let { frontTex: FrontTex, backTex: BackTex } = generateCardTextures({
+            name: Name,
+            role: Role,
+            idNumber: IdNumber,
+            clearance: Clearance,
+            organization: Organization,
+            department: Department,
+            zone: Zone,
+            issuedDate: IssuedDate,
+        });
+        let LanyardTex = generateLanyardTexture();
 
-    // Badge Pivot Group (origin at top clasp attachment point)
-    const badgeGroup = new THREE.Group();
-    scene.add(badgeGroup);
+        // Badge Pivot Group (origin at top clasp attachment point)
+        const BadgeGroup = new Three.Group();
+        Scene.add(BadgeGroup);
 
-    // Rounded Card Extruded Geometry
-    const cardW = 2.24;
-    const cardH = 3.5;
-    const cardR = 0.14;
-    const cardDepth = 0.045;
+        // Rounded Card Extruded Geometry
+        const CardW = 2.24;
+        const CardH = 3.5;
+        const CardR = 0.14;
+        const CardDepth = 0.045;
 
-    const shape = new THREE.Shape();
-    const x = -cardW / 2;
-    const y = -cardH;
-    shape.moveTo(x + cardR, y);
-    shape.lineTo(x + cardW - cardR, y);
-    shape.quadraticCurveTo(x + cardW, y, x + cardW, y + cardR);
-    shape.lineTo(x + cardW, y + cardH - cardR);
-    shape.quadraticCurveTo(x + cardW, y + cardH, x + cardW - cardR, y + cardH);
-    shape.lineTo(x + cardR, y + cardH);
-    shape.quadraticCurveTo(x, y + cardH, x, y + cardH - cardR);
-    shape.lineTo(x, y + cardR);
-    shape.quadraticCurveTo(x, y, x + cardR, y);
+        const Shape = new Three.Shape();
+        const X = -CardW / 2;
+        const Y = -CardH;
+        Shape.moveTo(X + CardR, Y);
+        Shape.lineTo(X + CardW - CardR, Y);
+        Shape.quadraticCurveTo(X + CardW, Y, X + CardW, Y + CardR);
+        Shape.lineTo(X + CardW, Y + CardH - CardR);
+        Shape.quadraticCurveTo(X + CardW, Y + CardH, X + CardW - CardR, Y + CardH);
+        Shape.lineTo(X + CardR, Y + CardH);
+        Shape.quadraticCurveTo(X, Y + CardH, X, Y + CardH - CardR);
+        Shape.lineTo(X, Y + CardR);
+        Shape.quadraticCurveTo(X, Y, X + CardR, Y);
 
-    const extrudeGeo = new THREE.ExtrudeGeometry(shape, {
-      depth: cardDepth,
-      bevelEnabled: true,
-      bevelSegments: 4,
-      steps: 1,
-      bevelSize: 0.012,
-      bevelThickness: 0.012,
-    });
-    extrudeGeo.center();
+        const ExtrudeGeo = new Three.ExtrudeGeometry(Shape, {
+            depth: CardDepth,
+            bevelEnabled: true,
+            bevelSegments: 4,
+            steps: 1,
+            bevelSize: 0.012,
+            bevelThickness: 0.012,
+        });
+        ExtrudeGeo.center();
 
-    // Shift geometry down so top edge sits cleanly below clasp
-    const cardOffsetY = -cardH / 2 - 0.34;
-    extrudeGeo.translate(0, cardOffsetY, 0);
+        // Shift geometry down so top edge sits cleanly below clasp
+        const CardOffsetY = -CardH / 2 - 0.34;
+        ExtrudeGeo.translate(0, CardOffsetY, 0);
 
-    const rimMat = new THREE.MeshStandardMaterial({
-      color: new THREE.Color(THEME.border2),
-      metalness: 0.55,
-      roughness: 0.35,
-    });
-    const cardBodyMesh = new THREE.Mesh(extrudeGeo, rimMat);
-    badgeGroup.add(cardBodyMesh);
+        const RimMat = new Three.MeshStandardMaterial({
+            color: new Three.Color(Theme.border2),
+            metalness: 0.55,
+            roughness: 0.35,
+        });
+        const CardBodyMesh = new Three.Mesh(ExtrudeGeo, RimMat);
+        BadgeGroup.add(CardBodyMesh);
 
-    // Front & Back Face Planes (mapped cleanly to UV 0..1)
-    const faceShape = new THREE.Shape();
-    const fx = -cardW / 2;
-    const fy = -cardH / 2;
-    faceShape.moveTo(fx + cardR, fy);
-    faceShape.lineTo(fx + cardW - cardR, fy);
-    faceShape.quadraticCurveTo(fx + cardW, fy, fx + cardW, fy + cardR);
-    faceShape.lineTo(fx + cardW, fy + cardH - cardR);
-    faceShape.quadraticCurveTo(fx + cardW, fy + cardH, fx + cardW - cardR, fy + cardH);
-    faceShape.lineTo(fx + cardR, fy + cardH);
-    faceShape.quadraticCurveTo(fx, fy + cardH, fx, fy + cardH - cardR);
-    faceShape.lineTo(fx, fy + cardR);
-    faceShape.quadraticCurveTo(fx, fy, fx + cardR, fy);
+        // Front & Back Face Planes (mapped cleanly to UV 0..1)
+        const FaceShape = new Three.Shape();
+        const Fx = -CardW / 2;
+        const Fy = -CardH / 2;
+        FaceShape.moveTo(Fx + CardR, Fy);
+        FaceShape.lineTo(Fx + CardW - CardR, Fy);
+        FaceShape.quadraticCurveTo(Fx + CardW, Fy, Fx + CardW, Fy + CardR);
+        FaceShape.lineTo(Fx + CardW, Fy + CardH - CardR);
+        FaceShape.quadraticCurveTo(Fx + CardW, Fy + CardH, Fx + CardW - CardR, Fy + CardH);
+        FaceShape.lineTo(Fx + CardR, Fy + CardH);
+        FaceShape.quadraticCurveTo(Fx, Fy + CardH, Fx, Fy + CardH - CardR);
+        FaceShape.lineTo(Fx, Fy + CardR);
+        FaceShape.quadraticCurveTo(Fx, Fy, Fx + CardR, Fy);
 
-    const faceGeo = new THREE.ShapeGeometry(faceShape, 24);
-    const posAttr = faceGeo.attributes.position;
-    const uvAttr = faceGeo.attributes.uv;
-    for (let i = 0; i < posAttr.count; i++) {
-      const px = posAttr.getX(i);
-      const py = posAttr.getY(i);
-      uvAttr.setXY(i, (px + cardW / 2) / cardW, (py + cardH / 2) / cardH);
-    }
-
-    const frontMat = new THREE.MeshPhysicalMaterial({
-      map: frontTex,
-      roughness: 0.28,
-      metalness: 0.08,
-      clearcoat: 0.65,
-      clearcoatRoughness: 0.18,
-    });
-    const frontMesh = new THREE.Mesh(faceGeo, frontMat);
-    frontMesh.position.set(0, cardOffsetY, cardDepth / 2 + 0.013);
-    badgeGroup.add(frontMesh);
-
-    const backMat = new THREE.MeshPhysicalMaterial({
-      map: backTex,
-      roughness: 0.32,
-      metalness: 0.08,
-      clearcoat: 0.5,
-      clearcoatRoughness: 0.22,
-    });
-    const backMesh = new THREE.Mesh(faceGeo, backMat);
-    backMesh.rotation.y = Math.PI;
-    backMesh.position.set(0, cardOffsetY, -(cardDepth / 2 + 0.013));
-    badgeGroup.add(backMesh);
-
-    // Metallic Swivel Clasp Hardware
-    const metalMat = new THREE.MeshStandardMaterial({
-      color: 0xb8cce0,
-      metalness: 0.88,
-      roughness: 0.22,
-    });
-
-    const ringGeo = new THREE.TorusGeometry(0.11, 0.022, 16, 32);
-    const ringMesh = new THREE.Mesh(ringGeo, metalMat);
-    ringMesh.position.set(0, -0.26, 0);
-    badgeGroup.add(ringMesh);
-
-    const barrelGeo = new THREE.CylinderGeometry(0.055, 0.065, 0.18, 20);
-    const barrelMesh = new THREE.Mesh(barrelGeo, metalMat);
-    barrelMesh.position.set(0, -0.11, 0);
-    badgeGroup.add(barrelMesh);
-
-    const buckleGeo = new THREE.BoxGeometry(0.32, 0.11, 0.07);
-    const buckleMesh = new THREE.Mesh(buckleGeo, metalMat);
-    buckleMesh.position.set(0, 0.01, 0);
-    badgeGroup.add(buckleMesh);
-
-    // Dynamic Flexible Lanyard Strap Mesh
-    const strapSegments = 24;
-    const strapWidth = 0.28;
-    const strapGeo = new THREE.PlaneGeometry(strapWidth, 1, 2, strapSegments);
-    const strapMat = new THREE.MeshStandardMaterial({
-      map: lanyardTex,
-      roughness: 0.72,
-      metalness: 0.05,
-      side: THREE.DoubleSide,
-    });
-    const strapMesh = new THREE.Mesh(strapGeo, strapMat);
-    // The strap vertices move outside the original plane bounds.
-    strapMesh.frustumCulled = false;
-    scene.add(strapMesh);
-
-    // Physics State
-    const anchorPos = new THREE.Vector3();
-    const updateAnchor = () => {
-      // Extend beyond the visible top at the strap's depth, including its sag.
-      const distance = camera.position.z + 0.5;
-      const halfHeight = Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)) * distance;
-      anchorPos.set(0, Math.max(3.15, camera.position.y + halfHeight + 0.5), 0);
-    };
-    updateAnchor();
-    const restPos = new THREE.Vector3(0, 1.35, 0);
-    const pos = restPos.clone();
-    const vel = new THREE.Vector3(0, 0, 0);
-
-    let rotX = 0;
-    let rotY = 0;
-    let rotZ = 0;
-    let velRotX = 0;
-    let velRotY = 0;
-    let velRotZ = 0;
-    let targetFlipY = 0;
-
-    // Interaction State
-    let isDragging = false;
-    let isHovered = false;
-    const pointerNDC = new THREE.Vector2();
-    const dragPlane = new THREE.Plane(new THREE.Vector3(0, 0, 1), 0);
-    const dragOffset = new THREE.Vector3();
-    const raycaster = new THREE.Raycaster();
-    const hitPoint = new THREE.Vector3();
-
-    const updatePointerNDC = (clientX: number, clientY: number) => {
-      const rect = renderer.domElement.getBoundingClientRect();
-      pointerNDC.x = ((clientX - rect.left) / rect.width) * 2 - 1;
-      pointerNDC.y = -((clientY - rect.top) / rect.height) * 2 + 1;
-    };
-
-    const onPointerDown = (e: PointerEvent) => {
-      updatePointerNDC(e.clientX, e.clientY);
-      raycaster.setFromCamera(pointerNDC, camera);
-      const intersects = raycaster.intersectObjects([cardBodyMesh, frontMesh, backMesh, buckleMesh], false);
-      if (intersects.length > 0) {
-        isDragging = true;
-        renderer.domElement.style.cursor = 'grabbing';
-        dragPlane.setFromNormalAndCoplanarPoint(new THREE.Vector3(0, 0, 1), pos);
-        if (raycaster.ray.intersectPlane(dragPlane, hitPoint)) {
-          dragOffset.copy(pos).sub(hitPoint);
+        const FaceGeo = new Three.ShapeGeometry(FaceShape, 24);
+        const PosAttr = FaceGeo.attributes.position;
+        const UvAttr = FaceGeo.attributes.uv;
+        for (let I = 0;I < PosAttr.count;I++) {
+            const Px = PosAttr.getX(I);
+            const Py = PosAttr.getY(I);
+            UvAttr.setXY(I, (Px + CardW / 2) / CardW, (Py + CardH / 2) / CardH);
         }
-        vel.set(0, 0, 0);
-      }
-    };
 
-    const onPointerMove = (e: PointerEvent) => {
-      updatePointerNDC(e.clientX, e.clientY);
-      raycaster.setFromCamera(pointerNDC, camera);
+        const FrontMat = new Three.MeshPhysicalMaterial({
+            map: FrontTex,
+            roughness: 0.28,
+            metalness: 0.08,
+            clearcoat: 0.65,
+            clearcoatRoughness: 0.18,
+        });
+        const FrontMesh = new Three.Mesh(FaceGeo, FrontMat);
+        FrontMesh.position.set(0, CardOffsetY, CardDepth / 2 + 0.013);
+        BadgeGroup.add(FrontMesh);
 
-      if (isDragging) {
-        if (raycaster.ray.intersectPlane(dragPlane, hitPoint)) {
-          const nextPos = hitPoint.clone().add(dragOffset);
-          // Soft clamp reach
-          nextPos.x = THREE.MathUtils.clamp(nextPos.x, -3.2, 3.2);
-          nextPos.y = THREE.MathUtils.clamp(nextPos.y, -2.4, 2.5);
-          vel.copy(nextPos).sub(pos).multiplyScalar(28);
-          pos.copy(nextPos);
-        }
-        return;
-      }
+        const BackMat = new Three.MeshPhysicalMaterial({
+            map: BackTex,
+            roughness: 0.32,
+            metalness: 0.08,
+            clearcoat: 0.5,
+            clearcoatRoughness: 0.22,
+        });
+        const BackMesh = new Three.Mesh(FaceGeo, BackMat);
+        BackMesh.rotation.y = Math.PI;
+        BackMesh.position.set(0, CardOffsetY, -(CardDepth / 2 + 0.013));
+        BadgeGroup.add(BackMesh);
 
-      const intersects = raycaster.intersectObjects([cardBodyMesh, frontMesh, backMesh], false);
-      isHovered = intersects.length > 0;
-      renderer.domElement.style.cursor = isHovered ? 'grab' : 'default';
-    };
+        // Metallic Swivel Clasp Hardware
+        const MetalMat = new Three.MeshStandardMaterial({
+            color: 0xb8cce0,
+            metalness: 0.88,
+            roughness: 0.22,
+        });
 
-    const onPointerUp = () => {
-      if (isDragging) {
-        isDragging = false;
-        renderer.domElement.style.cursor = isHovered ? 'grab' : 'default';
-        // Impart subtle angular spin from release velocity
-        velRotY += vel.x * 0.25;
-        velRotX -= vel.y * 0.18;
-      }
-    };
+        const RingGeo = new Three.TorusGeometry(0.11, 0.022, 16, 32);
+        const RingMesh = new Three.Mesh(RingGeo, MetalMat);
+        RingMesh.position.set(0, -0.26, 0);
+        BadgeGroup.add(RingMesh);
 
-    const onDoubleClick = (e: MouseEvent) => {
-      updatePointerNDC(e.clientX, e.clientY);
-      raycaster.setFromCamera(pointerNDC, camera);
-      const intersects = raycaster.intersectObjects([cardBodyMesh, frontMesh, backMesh], false);
-      if (intersects.length > 0) {
-        targetFlipY += Math.PI;
-        velRotZ += 1.4;
-      }
-    };
+        const BarrelGeo = new Three.CylinderGeometry(0.055, 0.065, 0.18, 20);
+        const BarrelMesh = new Three.Mesh(BarrelGeo, MetalMat);
+        BarrelMesh.position.set(0, -0.11, 0);
+        BadgeGroup.add(BarrelMesh);
 
-    const domElem = renderer.domElement;
-    domElem.addEventListener('pointerdown', onPointerDown);
-    window.addEventListener('pointermove', onPointerMove);
-    window.addEventListener('pointerup', onPointerUp);
-    window.addEventListener('pointercancel', onPointerUp);
-    domElem.addEventListener('dblclick', onDoubleClick);
+        const BuckleGeo = new Three.BoxGeometry(0.32, 0.11, 0.07);
+        const BuckleMesh = new Three.Mesh(BuckleGeo, MetalMat);
+        BuckleMesh.position.set(0, 0.01, 0);
+        BadgeGroup.add(BuckleMesh);
 
-    // ResizeObserver so component fits any wrapper smoothly
-    const resizeObserver = new ResizeObserver((entries) => {
-      for (const entry of entries) {
-        const { width: w, height: h } = entry.contentRect;
-        if (w > 0 && h > 0) {
-          camera.aspect = w / h;
-          camera.updateProjectionMatrix();
-          updateAnchor();
-          renderer.setSize(w, h);
-        }
-      }
-    });
-    resizeObserver.observe(container);
+        // Dynamic Flexible Lanyard Strap Mesh
+        const StrapSegments = 24;
+        const StrapWidth = 0.28;
+        const StrapGeo = new Three.PlaneGeometry(StrapWidth, 1, 2, StrapSegments);
+        const StrapMat = new Three.MeshStandardMaterial({
+            map: LanyardTex,
+            roughness: 0.72,
+            metalness: 0.05,
+            side: Three.DoubleSide,
+        });
+        // Refresh only the textures and rim, preserving the current swing and drag state.
+        const ThemeObserver = new MutationObserver(() => {
+            const NextTheme = GetBadgeTheme();
+            const Textures = generateCardTextures({
+                name: Name, role: Role, idNumber: IdNumber, clearance: Clearance,
+                organization: Organization, department: Department, zone: Zone, issuedDate: IssuedDate,
+            });
+            const NextLanyardTex = generateLanyardTexture();
+            FrontMat.map = Textures.frontTex;
+            BackMat.map = Textures.backTex;
+            StrapMat.map = NextLanyardTex;
+            RimMat.color.set(NextTheme.border2);
+            FrontTex.dispose();
+            BackTex.dispose();
+            LanyardTex.dispose();
+            FrontTex = Textures.frontTex;
+            BackTex = Textures.backTex;
+            LanyardTex = NextLanyardTex;
+        });
+        ThemeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
 
-    // Update curved lanyard geometry between ceiling anchor and clasp
-    const updateStrapGeometry = () => {
-      const posArr = strapGeo.attributes.position;
-      const topPoint = anchorPos;
-      const bottomPoint = new THREE.Vector3(pos.x, pos.y + 0.04, pos.z);
+        const StrapMesh = new Three.Mesh(StrapGeo, StrapMat);
+        // The strap vertices move outside the original plane bounds.
+        StrapMesh.frustumCulled = false;
+        Scene.add(StrapMesh);
 
-      // Control point creates natural fabric sag when moved
-      const midPoint = topPoint.clone().lerp(bottomPoint, 0.5);
-      const slack = Math.max(0, 1.8 - topPoint.distanceTo(bottomPoint));
-      midPoint.z -= 0.12 + slack * 0.35;
-      midPoint.x -= (bottomPoint.x - topPoint.x) * 0.15;
+        // Physics State
+        const AnchorPos = new Three.Vector3();
+        const UpdateAnchor = () => {
+            // Extend beyond the visible top at the strap's depth, including its sag.
+            const Distance = Camera.position.z + 0.5;
+            const HalfHeight = Math.tan(Three.MathUtils.degToRad(Camera.fov / 2)) * Distance;
+            AnchorPos.set(0, Math.max(3.15, Camera.position.y + HalfHeight + 0.5), 0);
+        };
+        UpdateAnchor();
+        const RestPos = new Three.Vector3(0, 1.35, 0);
+        const Pos = RestPos.clone();
+        const Vel = new Three.Vector3(0, 0, 0);
 
-      const curve = new THREE.QuadraticBezierCurve3(topPoint, midPoint, bottomPoint);
-      const tangent = new THREE.Vector3();
-      const right = new THREE.Vector3();
+        let RotX = 0;
+        let RotY = 0;
+        let RotZ = 0;
+        let VelRotX = 0;
+        let VelRotY = 0;
+        let VelRotZ = 0;
+        let TargetFlipY = 0;
 
-      for (let i = 0; i <= strapSegments; i++) {
-        const t = i / strapSegments;
-        const pt = curve.getPoint(t);
-        curve.getTangent(t, tangent);
+        // Interaction State
+        let IsDragging = false;
+        let ActivePointerId: number | null = null;
+        let IsHovered = false;
+        const PointerNDC = new Three.Vector2();
+        const DragPlane = new Three.Plane(new Three.Vector3(0, 0, 1), 0);
+        const DragOffset = new Three.Vector3();
+        const Raycaster = new Three.Raycaster();
+        const HitPoint = new Three.Vector3();
 
-        // Twist strap gradually to match badge Y rotation near the clasp
-        const twistAngle = rotY * Math.pow(t, 1.6);
-        right.set(Math.cos(twistAngle), 0, -Math.sin(twistAngle)).multiplyScalar(strapWidth / 2);
+        const UpdatePointerNDC = (ClientX: number, ClientY: number) => {
+            const Rect = Renderer.domElement.getBoundingClientRect();
+            PointerNDC.x = ((ClientX - Rect.left) / Rect.width) * 2 - 1;
+            PointerNDC.y = -((ClientY - Rect.top) / Rect.height) * 2 + 1;
+        };
 
-        const leftIdx = i * 3;
-        const centerIdx = i * 3 + 1;
-        const rightIdx = i * 3 + 2;
+        const OnPointerDown = (E: PointerEvent) => {
+            if (!E.isPrimary || E.button !== 0 || ActivePointerId !== null) return;
+            UpdatePointerNDC(E.clientX, E.clientY);
+            Raycaster.setFromCamera(PointerNDC, Camera);
+            const Intersects = Raycaster.intersectObjects([CardBodyMesh, FrontMesh, BackMesh, BuckleMesh], false);
+            if (Intersects.length > 0) {
+                IsDragging = true;
+                ActivePointerId = E.pointerId;
+                Renderer.domElement.style.cursor = 'grabbing';
+                DragPlane.setFromNormalAndCoplanarPoint(new Three.Vector3(0, 0, 1), Pos);
+                if (Raycaster.ray.intersectPlane(DragPlane, HitPoint)) {
+                    DragOffset.copy(Pos).sub(HitPoint);
+                }
+                Vel.set(0, 0, 0);
+            }
+        };
 
-        posArr.setXYZ(leftIdx, pt.x - right.x, pt.y, pt.z - right.z);
-        posArr.setXYZ(centerIdx, pt.x, pt.y, pt.z);
-        posArr.setXYZ(rightIdx, pt.x + right.x, pt.y, pt.z + right.z);
-      }
-      posArr.needsUpdate = true;
-      strapGeo.computeVertexNormals();
-    };
+        const OnPointerMove = (E: PointerEvent) => {
+            if (ActivePointerId !== null && E.pointerId !== ActivePointerId) return;
+            if (E.pointerType === 'touch' && !IsDragging) return;
+            UpdatePointerNDC(E.clientX, E.clientY);
+            Raycaster.setFromCamera(PointerNDC, Camera);
 
-    // Animation Loop
-    let animationFrameId = 0;
-    let lastTime = performance.now();
+            if (IsDragging) {
+                if (Raycaster.ray.intersectPlane(DragPlane, HitPoint)) {
+                    const NextPos = HitPoint.clone().add(DragOffset);
+                    // Soft clamp reach
+                    NextPos.x = Three.MathUtils.clamp(NextPos.x, -3.2, 3.2);
+                    NextPos.y = Three.MathUtils.clamp(NextPos.y, -2.4, 2.5);
+                    Vel.copy(NextPos).sub(Pos).multiplyScalar(28);
+                    Pos.copy(NextPos);
+                }
+                return;
+            }
 
-    const animate = (now: number) => {
-      animationFrameId = requestAnimationFrame(animate);
-      const dt = Math.min((now - lastTime) / 1000, 0.033);
-      lastTime = now;
+            const Intersects = Raycaster.intersectObjects([CardBodyMesh, FrontMesh, BackMesh], false);
+            IsHovered = Intersects.length > 0;
+            Renderer.domElement.style.cursor = IsHovered ? 'grab' : 'default';
+        };
 
-      // Spring-pendulum physics when not dragging
-      if (!isDragging) {
-        const stiffness = 68;
-        const damping = 5.4;
+        const OnPointerCancel = (E: PointerEvent) => {
+            if (E.pointerId !== ActivePointerId) return;
+            // A vertical swipe belongs to the browser; stop dragging without a fling.
+            IsDragging = false;
+            IsHovered = false;
+            ActivePointerId = null;
+            Vel.set(0, 0, 0);
+            Renderer.domElement.style.cursor = 'default';
+        };
 
-        // Subtle ambient air current sway
-        const breezeX = Math.sin(now * 0.0011) * 0.035;
-        const breezeZ = Math.cos(now * 0.0009) * 0.02;
+        const OnPointerUp = (E: PointerEvent) => {
+            if (E.pointerId !== ActivePointerId) return;
+            ActivePointerId = null;
+            if (E.pointerType === 'touch') IsHovered = false;
+            if (IsDragging) {
+                IsDragging = false;
+                Renderer.domElement.style.cursor = IsHovered ? 'grab' : 'default';
+                // Impart subtle angular spin from release velocity
+                VelRotY += Vel.x * 0.25;
+                VelRotX -= Vel.y * 0.18;
+            }
+        };
 
-        const forceX = (restPos.x + breezeX - pos.x) * stiffness;
-        const forceY = (restPos.y - pos.y) * (stiffness * 1.3);
-        const forceZ = (restPos.z + breezeZ - pos.z) * stiffness;
+        const OnDoubleClick = (E: MouseEvent) => {
+            UpdatePointerNDC(E.clientX, E.clientY);
+            Raycaster.setFromCamera(PointerNDC, Camera);
+            const Intersects = Raycaster.intersectObjects([CardBodyMesh, FrontMesh, BackMesh], false);
+            if (Intersects.length > 0) {
+                TargetFlipY += Math.PI;
+                VelRotZ += 1.4;
+            }
+        };
 
-        vel.x = (vel.x + forceX * dt) * Math.exp(-damping * dt);
-        vel.y = (vel.y + forceY * dt) * Math.exp(-damping * dt);
-        vel.z = (vel.z + forceZ * dt) * Math.exp(-damping * dt);
+        const DomElem = Renderer.domElement;
+        DomElem.addEventListener('pointerdown', OnPointerDown);
+        window.addEventListener('pointermove', OnPointerMove);
+        window.addEventListener('pointerup', OnPointerUp);
+        window.addEventListener('pointercancel', OnPointerCancel);
+        DomElem.addEventListener('dblclick', OnDoubleClick);
 
-        pos.addScaledVector(vel, dt);
-      }
+        // ResizeObserver so component fits any wrapper smoothly
+        const BadgeResizeObserver = new ResizeObserver((Entries) => {
+            for (const Entry of Entries) {
+                const { width: W, height: H } = Entry.contentRect;
+                if (W > 0 && H > 0) {
+                    Camera.aspect = W / H;
+                    Camera.updateProjectionMatrix();
+                    UpdateAnchor();
+                    Renderer.setSize(W, H);
+                }
+            }
+        });
+        BadgeResizeObserver.observe(Container);
 
-      // Pendulum roll (Z) & pitch (X) driven by lateral/depth acceleration
-      const targetRotZ = THREE.MathUtils.clamp(-(pos.x - anchorPos.x) * 0.36 - vel.x * 0.05, -0.65, 0.65);
-      const hoverTiltX = isHovered && !isDragging ? -pointerNDC.y * 0.22 : 0;
-      const hoverTiltY = isHovered && !isDragging ? pointerNDC.x * 0.32 : 0;
+        // Update curved lanyard geometry between ceiling anchor and clasp
+        const UpdateStrapGeometry = () => {
+            const PosArr = StrapGeo.attributes.position;
+            const TopPoint = AnchorPos;
+            const BottomPoint = new Three.Vector3(Pos.x, Pos.y + 0.04, Pos.z);
 
-      const targetRotX = THREE.MathUtils.clamp(vel.z * 0.08 + hoverTiltX, -0.5, 0.5);
-      const desiredRotY = targetFlipY + hoverTiltY + Math.sin(now * 0.0008) * 0.06;
+            // Control point creates natural fabric sag when moved
+            const MidPoint = TopPoint.clone().lerp(BottomPoint, 0.5);
+            const Slack = Math.max(0, 1.8 - TopPoint.distanceTo(BottomPoint));
+            MidPoint.z -= 0.12 + Slack * 0.35;
+            MidPoint.x -= (BottomPoint.x - TopPoint.x) * 0.15;
 
-      velRotX = (velRotX + (targetRotX - rotX) * 85 * dt) * Math.exp(-8 * dt);
-      velRotY = (velRotY + (desiredRotY - rotY) * 65 * dt) * Math.exp(-6.5 * dt);
-      velRotZ = (velRotZ + (targetRotZ - rotZ) * 85 * dt) * Math.exp(-7.5 * dt);
+            const Curve = new Three.QuadraticBezierCurve3(TopPoint, MidPoint, BottomPoint);
+            const Tangent = new Three.Vector3();
+            const Right = new Three.Vector3();
 
-      rotX += velRotX * dt;
-      rotY += velRotY * dt;
-      rotZ += velRotZ * dt;
+            for (let I = 0;I <= StrapSegments;I++) {
+                const T = I / StrapSegments;
+                const Pt = Curve.getPoint(T);
+                Curve.getTangent(T, Tangent);
 
-      badgeGroup.position.copy(pos);
-      badgeGroup.rotation.set(rotX, rotY, rotZ);
+                // Twist strap gradually to match badge Y rotation near the clasp
+                const TwistAngle = RotY * Math.pow(T, 1.6);
+                Right.set(Math.cos(TwistAngle), 0, -Math.sin(TwistAngle)).multiplyScalar(StrapWidth / 2);
 
-      // Subtle dynamic shimmer on clearcoat based on card angle
-      frontMat.clearcoatRoughness = 0.14 + Math.abs(Math.sin(rotY)) * 0.12;
+                const LeftIdx = I * 3;
+                const CenterIdx = I * 3 + 1;
+                const RightIdx = I * 3 + 2;
 
-      updateStrapGeometry();
-      renderer.render(scene, camera);
-    };
+                PosArr.setXYZ(LeftIdx, Pt.x - Right.x, Pt.y, Pt.z - Right.z);
+                PosArr.setXYZ(CenterIdx, Pt.x, Pt.y, Pt.z);
+                PosArr.setXYZ(RightIdx, Pt.x + Right.x, Pt.y, Pt.z + Right.z);
+            }
+            PosArr.needsUpdate = true;
+            StrapGeo.computeVertexNormals();
+        };
 
-    animationFrameId = requestAnimationFrame(animate);
+        // Animation Loop
+        let AnimationFrameId = 0;
+        let LastTime = performance.now();
 
-    // Cleanup on unmount
-    return () => {
-      cancelAnimationFrame(animationFrameId);
-      resizeObserver.disconnect();
-      domElem.removeEventListener('pointerdown', onPointerDown);
-      window.removeEventListener('pointermove', onPointerMove);
-      window.removeEventListener('pointerup', onPointerUp);
-      window.removeEventListener('pointercancel', onPointerUp);
-      domElem.removeEventListener('dblclick', onDoubleClick);
+        const Animate = (Now: number) => {
+            AnimationFrameId = requestAnimationFrame(Animate);
+            const Dt = Math.min((Now - LastTime) / 1000, 0.033);
+            LastTime = Now;
 
-      frontTex.dispose();
-      backTex.dispose();
-      lanyardTex.dispose();
-      extrudeGeo.dispose();
-      faceGeo.dispose();
-      ringGeo.dispose();
-      barrelGeo.dispose();
-      buckleGeo.dispose();
-      strapGeo.dispose();
-      rimMat.dispose();
-      frontMat.dispose();
-      backMat.dispose();
-      metalMat.dispose();
-      strapMat.dispose();
-      renderer.dispose();
-      if (domElem.parentNode === container) {
-        container.removeChild(domElem);
-      }
-    };
-  }, [name, role, idNumber, clearance, organization, department, zone, issuedDate]);
+            // Spring-pendulum physics when not dragging
+            if (!IsDragging) {
+                const Stiffness = 68;
+                const Damping = 5.4;
 
-  return (
-    <div
-      ref={containerRef}
-      className={className}
-      style={{
-        width: '100%',
-        height: '100%',
-        minHeight: '480px',
-        position: 'relative',
-        userSelect: 'none',
-        touchAction: 'none',
-        ...style,
-      }}
-      title="Drag to swing • Double-click to flip"
-    />
-  );
+                // Subtle ambient air current sway
+                const BreezeX = Math.sin(Now * 0.0011) * 0.035;
+                const BreezeZ = Math.cos(Now * 0.0009) * 0.02;
+
+                const ForceX = (RestPos.x + BreezeX - Pos.x) * Stiffness;
+                const ForceY = (RestPos.y - Pos.y) * (Stiffness * 1.3);
+                const ForceZ = (RestPos.z + BreezeZ - Pos.z) * Stiffness;
+
+                Vel.x = (Vel.x + ForceX * Dt) * Math.exp(-Damping * Dt);
+                Vel.y = (Vel.y + ForceY * Dt) * Math.exp(-Damping * Dt);
+                Vel.z = (Vel.z + ForceZ * Dt) * Math.exp(-Damping * Dt);
+
+                Pos.addScaledVector(Vel, Dt);
+            }
+
+            // Pendulum roll (Z) & pitch (X) driven by lateral/depth acceleration
+            const TargetRotZ = Three.MathUtils.clamp(-(Pos.x - AnchorPos.x) * 0.36 - Vel.x * 0.05, -0.65, 0.65);
+            const HoverTiltX = IsHovered && !IsDragging ? -PointerNDC.y * 0.22 : 0;
+            const HoverTiltY = IsHovered && !IsDragging ? PointerNDC.x * 0.32 : 0;
+
+            const TargetRotX = Three.MathUtils.clamp(Vel.z * 0.08 + HoverTiltX, -0.5, 0.5);
+            const DesiredRotY = TargetFlipY + HoverTiltY + Math.sin(Now * 0.0008) * 0.06;
+
+            VelRotX = (VelRotX + (TargetRotX - RotX) * 85 * Dt) * Math.exp(-8 * Dt);
+            VelRotY = (VelRotY + (DesiredRotY - RotY) * 65 * Dt) * Math.exp(-6.5 * Dt);
+            VelRotZ = (VelRotZ + (TargetRotZ - RotZ) * 85 * Dt) * Math.exp(-7.5 * Dt);
+
+            RotX += VelRotX * Dt;
+            RotY += VelRotY * Dt;
+            RotZ += VelRotZ * Dt;
+
+            BadgeGroup.position.copy(Pos);
+            BadgeGroup.rotation.set(RotX, RotY, RotZ);
+
+            // Subtle dynamic shimmer on clearcoat based on card angle
+            FrontMat.clearcoatRoughness = 0.14 + Math.abs(Math.sin(RotY)) * 0.12;
+
+            UpdateStrapGeometry();
+            Renderer.render(Scene, Camera);
+        };
+
+        AnimationFrameId = requestAnimationFrame(Animate);
+
+        // Cleanup on unmount
+        return () => {
+            cancelAnimationFrame(AnimationFrameId);
+            BadgeResizeObserver.disconnect();
+            ThemeObserver.disconnect();
+            DomElem.removeEventListener('pointerdown', OnPointerDown);
+            window.removeEventListener('pointermove', OnPointerMove);
+            window.removeEventListener('pointerup', OnPointerUp);
+            window.removeEventListener('pointercancel', OnPointerCancel);
+            DomElem.removeEventListener('dblclick', OnDoubleClick);
+
+            FrontTex.dispose();
+            BackTex.dispose();
+            LanyardTex.dispose();
+            ExtrudeGeo.dispose();
+            FaceGeo.dispose();
+            RingGeo.dispose();
+            BarrelGeo.dispose();
+            BuckleGeo.dispose();
+            StrapGeo.dispose();
+            RimMat.dispose();
+            FrontMat.dispose();
+            BackMat.dispose();
+            MetalMat.dispose();
+            StrapMat.dispose();
+            Renderer.dispose();
+            if (DomElem.parentNode === Container) {
+                Container.removeChild(DomElem);
+            }
+        };
+    }, [Name, Role, IdNumber, Clearance, Organization, Department, Zone, IssuedDate]);
+
+    return (
+        <div
+            ref = {ContainerRef}
+            className = {ClassName}
+            style = {{
+                width: '100%',
+                height: '100%',
+                minHeight: '480px',
+                position: 'relative',
+                userSelect: 'none',
+                touchAction: 'pan-y pinch-zoom',
+                ...Style,
+            }}
+            title = "Drag to swing • Double-click to flip"
+        />
+    );
 }

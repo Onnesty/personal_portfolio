@@ -1,144 +1,115 @@
 import styles from './Projects.module.css';
+import { useTheme } from '../../theme';
 import { useInView } from 'react-intersection-observer';
 import { useState } from 'react';
 
-import {SoftwareProjectData, EngineeringProjectData, type ProjectDataStruct}from './ProjectInformation.tsx';
+import { SoftwareProjectData, EngineeringProjectData, type ProjectDataStruct } from './ProjectInformation.tsx';
 
+export default function Projects({ type: Type }: { type: string; }) {
 
-export default function Projects({ Type } : { Type : string }) {
-        
+    const CurrentTheme = useTheme();
+
     const Data = (Type === "Software") ? SoftwareProjectData() as ProjectDataStruct[] : EngineeringProjectData() as ProjectDataStruct[];
 
     const Size = Data.length;
-    
-    const { ref : ScrollRef, inView } = useInView({ // For Intersection Observer
-    threshold: 0.3,
-    })
+
+    const { ref: ScrollRef, inView: InView } = useInView({ // For Intersection Observer
+        threshold: 0.3,
+    });
 
     const [IsHover, ToggleIsHover] = useState(false);
 
-    const [CurrentIndex, ChangeCurrentIndex ] = useState(0);
-
+    const [CurrentIndex, ChangeCurrentIndex] = useState(0);
 
     const HandleNext = () => {
-        
-        const Index : number = (CurrentIndex + 1) % Size;
+
+        const Index: number = (CurrentIndex + 1) % Size;
 
         ChangeCurrentIndex(Index);
-        
 
-    }
+    };
 
     const HandlePrevious = () => {
 
-        const Index : number = (CurrentIndex - 1);
+        const Index: number = (CurrentIndex - 1);
 
         ChangeCurrentIndex(Index < 0 ? 0 : Index);
-        
-    }
 
-
-    
-
-
-
+    };
 
     return (
 
-        <div className = {styles.MainContainer} ref = {ScrollRef}> 
+        <div className = {styles.MainContainer} ref = {ScrollRef}>
 
-
-            
-
-
-            <h1 className = {`${styles.Title} ${inView ? "animate__animated animate__fadeInDown" : "animate__animated animate__fadeOutUp"}`}>
+            <h1 className = {`${styles.Title} ${InView ? "animate__animated animate__fadeInDown" : "animate__animated animate__fadeOutUp"}`}>
 
                 {`My ${Type} Projects`}
 
             </h1>
 
-
-                
-
-           
-
-            <div className = {`${styles.Track} ${inView ? styles.Show : ""}`} >
-
-                
+            <div className = {`${styles.Track} ${InView ? styles.Show : ""}`} >
 
                 {Data.map((Item, Index) => (
-                    
-                    <div key={Item.ID} className = {styles.ContentContainer} style = {{transform : `translateX(-${100 * CurrentIndex}%)`}}>
 
-                        <div className = {styles.CardContainer} key = {`${Item.ID}_${Index}`} 
-                            onPointerEnter = {() => {ToggleIsHover(true)}} onPointerLeave = {() => {ToggleIsHover(false)}}
-                            onClick = {() => {window.open(Item.Link, '_blank', 'noopener,noreferrer')}}
+                    <div key = {Item.id} className = {styles.ContentContainer} style = {{ transform: `translateX(-${100 * CurrentIndex}%)` }}>
+
+                        <div className = {styles.CardContainer} key = {`${Item.id}_${Index}`}
+                            onPointerEnter = {() => { ToggleIsHover(true); }} onPointerLeave = {() => { ToggleIsHover(false); }}
+                            onClick = {() => { window.open(Item.link, '_blank', 'noopener,noreferrer'); }}
                         >
-                            
-                            <img className = {styles.ProjectImage} src = {Item.ProjectImage} alt = {Item.ProjectImage}/>      
+
+                            <img className = {styles.ProjectImage} src = {Item.projectImage} alt = {Item.title} />
 
                             <div className = {styles.InformationContainer}>
 
-                                <h3 className = {styles.ProjectTitle}> {Item.Title} </h3>
-                                
+                                <h3 className = {styles.ProjectTitle}> {Item.title} </h3>
+
                                 <div className = {styles.TechnologiesContainer}>
-                                    
-                                    <div className = {styles.TechnologyTrack}> 
-                                        
-                                        {Item.Technologies.map((TechItem, TechIndex) => (
 
-                                        <div className = {styles.Technology} key = {`${Item.ID}_${Index}_${TechIndex}`}> 
-                                            <img className = {styles.TechnologyImage} src = {TechItem.Image} alt = {TechItem.Name} />
-                                            <h4 className = {styles.TechnologyName}> {TechItem.Name} </h4>
-                                        </div>
+                                    <div className = {styles.TechnologyTrack}>
 
-                                    ))}
+                                        {Item.technologies.map((TechItem, TechIndex) => (
+
+                                            <div className = {styles.Technology} key = {`${Item.id}_${Index}_${TechIndex}`}>
+                                                <img className = {styles.TechnologyImage} src = {TechItem.Image} alt = {TechItem.Name} />
+                                                <h4 className = {styles.TechnologyName}> {TechItem.Name} </h4>
+                                            </div>
+
+                                        ))}
 
                                     </div>
-                                    
 
                                 </div>
-                                
+
                                 <p className = {styles.ProjectDecription}>
 
-                                    {Item.Description}
+                                    {Item.description}
 
                                 </p>
 
-               
-                                
-
                             </div>
-                            
-                            <div className = {`${styles.LinkButton} ${IsHover ? styles.Show : ""}`} > 
-                                
-                                <img className = {styles.LinkImage} src = {`/Assets/${Type === "Software" ? "GitHub": "Documentation"}.svg`} alt = "Link" />
-                                
+
+                            <div className = {`${styles.LinkButton} ${IsHover ? styles.Show : ""}`} >
+
+                                <img className = {styles.LinkImage} src = {`/Assets/${Type === "Software" ? (CurrentTheme === 'light' ? "GitHubLight" : "GitHub") : "Documentation"}.svg`} alt = "Link" />
+
                                 <h6 className = {styles.LinkMessage}>
-                                    { Type === "Software" ? "Visit on GitHub": "View Documentation"}
+                                    {Type === "Software" ? "Visit on GitHub" : "View Documentation"}
                                 </h6>
 
                             </div>
-
-                            
 
                         </div>
                     </div>
 
                 ))}
 
+                <img className = {styles.CarouselButton} style = {{ left: "5%" }} src = {CurrentTheme === 'light' ? "/Assets/BackLight.png" : "/Assets/Back.png"} alt = "Previous" onClick = {HandlePrevious} />
 
-
-                
-                <img className = {styles.CarouselButton} style = {{left : "5%"}} src = "/Assets/Back.png" alt = "Previous" onClick = {HandlePrevious}/>
-
-                <img className = {styles.CarouselButton} style = {{right : "5%"}} src = "/Assets/Next.png" alt = "Next" onClick = {HandleNext}/>
-            
+                <img className = {styles.CarouselButton} style = {{ right: "5%" }} src = {CurrentTheme === 'light' ? "/Assets/NextLight.png" : "/Assets/Next.png"} alt = "Next" onClick = {HandleNext} />
 
             </div>
 
-            
-
         </div>
-    )
+    );
 }

@@ -1,16 +1,16 @@
 import styles from './NavButtons.module.css';
 
 interface NavButtonProps {
-  IsActive: boolean;
-  Title: string;
-  CallBack: () => void;
+    isActive: boolean;
+    title: string;
+    callback: () => void;
 }
 
-export default function NavButton({ IsActive, Title, CallBack }: NavButtonProps) {
-  return (
-    <button type="button" className={`${styles.ButtonContainer} ${IsActive ? styles.Observed : ''}`}
-      aria-current={IsActive ? 'location' : undefined} onClick={CallBack}>
-      {Title}
-    </button>
-  );
+export default function NavButton({ isActive: IsActive, title: Title, callback: Callback }: NavButtonProps) {
+    return (
+        <button type = "button" className = {`${styles.ButtonContainer} ${IsActive ? styles.Observed : ''}`}
+            aria-current = {IsActive ? 'location' : undefined} onClick = {Callback}>
+            {Title}
+        </button>
+    );
 }
