@@ -91,10 +91,10 @@ export default function Projects({ type: Type }: { type: string; }) {
 
                             <div className = {`${styles.LinkButton} ${IsHover ? styles.Show : ""}`} >
 
-                                <img className = {styles.LinkImage} src = {`/Assets/${Type === "Software" ? (CurrentTheme === 'light' ? "GitHubLight" : "GitHub") : "Documentation"}.svg`} alt = "Link" />
+                                <img className = {styles.LinkImage} src = {CurrentTheme === 'light' ? "/Assets/GitHubLight.svg" : "/Assets/GitHub.svg"} alt = "GitHub" />
 
                                 <h6 className = {styles.LinkMessage}>
-                                    {Type === "Software" ? "Visit on GitHub" : "View Documentation"}
+                                    Visit on GitHub
                                 </h6>
 
                             </div>

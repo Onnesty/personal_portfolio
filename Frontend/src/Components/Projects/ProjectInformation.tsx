@@ -101,7 +101,7 @@ export function EngineeringProjectData(): ProjectDataStruct[] {
                     by a controller. Primarily uses ESP-NOW as the communication method.
                 `,
 
-                link: ""
+                link: "https://github.com/Onnesty/esp32_esp01s_smart_socket"
             },
 
             {

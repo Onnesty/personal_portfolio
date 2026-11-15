@@ -1,9 +1,42 @@
 import styles from './Contact.module.css';
+import { useState, type FormEvent } from 'react';
 import { useTheme } from '../../theme';
 
 export default function Contact() {
 
     const CurrentTheme = useTheme();
+    const [Submitting, SetSubmitting] = useState(false);
+    const [SubmissionMessage, SetSubmissionMessage] = useState('');
+
+    async function SubmitCommission(Event: FormEvent<HTMLFormElement>) {
+        Event.preventDefault();
+        if (Submitting) return;
+
+        const Form = Event.currentTarget;
+        const Data = new FormData(Form);
+        SetSubmitting(true);
+        SetSubmissionMessage('');
+
+        try {
+            const Response = await fetch(Form.action, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+                body: JSON.stringify(Object.fromEntries(Data)),
+            });
+            const Result = await Response.json();
+
+            if (Response.ok && Result.success === true) {
+                Form.reset();
+                SetSubmissionMessage('Your commission request was sent successfully.');
+            } else {
+                SetSubmissionMessage('Unable to send your request. Please try again.');
+            }
+        } catch {
+            SetSubmissionMessage('Unable to send your request. Check your connection and try again.');
+        } finally {
+            SetSubmitting(false);
+        }
+    }
 
     const Contacts = [
         {
@@ -55,7 +88,7 @@ export default function Contact() {
 
             </div>
 
-            <form className = {styles.ContactContainer} action = "https://api.web3forms.com/submit" method = "POST"  >
+            <form className = {styles.ContactContainer} action = "https://api.web3forms.com/submit" method = "POST" onSubmit = {SubmitCommission} aria-busy = {Submitting} >
 
                 <input type = "hidden" name = "access_key" value = "559f89f3-c293-4daf-860f-4024d2071d94" />
 
@@ -79,11 +112,13 @@ export default function Contact() {
 
                 <textarea name = "CommissionMessage" className = {styles.TextInput} required ></textarea>
 
-                <button type = "submit" className = {styles.SendButton}>
+                <button type = "submit" className = {styles.SendButton} disabled = {Submitting}>
 
-                    Send Commission
+                    {Submitting ? 'Sending…' : 'Send Commission'}
 
                 </button>
+
+                <p role = "status">{SubmissionMessage}</p>
 
             </form>
 
