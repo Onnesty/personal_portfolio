@@ -25,9 +25,11 @@ function getCanvasContext(Canvas: HTMLCanvasElement): CanvasRenderingContext2D {
 
 // Badge colors live beside the page palettes in themes.css.
 function GetBadgeTheme() {
-    const Styles = getComputedStyle(document.documentElement);
+    const Root = document.documentElement;
+    const Styles = getComputedStyle(Root);
     const Color = (Name: string) => Styles.getPropertyValue(`--badge-${Name}`).trim();
     return {
+        isLight: Root.dataset.theme === 'light',
         bg: Color('background'),
         bg2: Color('background-2'),
         bg3: Color('background-3'),
@@ -633,7 +635,9 @@ export default function HangingIdBadge({
             clearcoat: 0.65,
             clearcoatRoughness: 0.18,
         });
-        const FrontMesh = new Three.Mesh(FaceGeo, FrontMat);
+        // Keep the light-mode artwork white at every angle.
+        const LightFrontMat = new Three.MeshBasicMaterial({ map: FrontTex, toneMapped: false });
+        const FrontMesh = new Three.Mesh(FaceGeo, Theme.isLight ? LightFrontMat : FrontMat);
         FrontMesh.position.set(0, CardOffsetY, CardDepth / 2 + 0.013);
         BadgeGroup.add(FrontMesh);
 
@@ -644,7 +648,8 @@ export default function HangingIdBadge({
             clearcoat: 0.5,
             clearcoatRoughness: 0.22,
         });
-        const BackMesh = new Three.Mesh(FaceGeo, BackMat);
+        const LightBackMat = new Three.MeshBasicMaterial({ map: BackTex, toneMapped: false });
+        const BackMesh = new Three.Mesh(FaceGeo, Theme.isLight ? LightBackMat : BackMat);
         BackMesh.rotation.y = Math.PI;
         BackMesh.position.set(0, CardOffsetY, -(CardDepth / 2 + 0.013));
         BadgeGroup.add(BackMesh);
@@ -681,7 +686,7 @@ export default function HangingIdBadge({
             metalness: 0.05,
             side: Three.DoubleSide,
         });
-        // Refresh only the textures and rim, preserving the current swing and drag state.
+        // Refresh badge colors and materials without resetting the swing or drag state.
         const ThemeObserver = new MutationObserver(() => {
             const NextTheme = GetBadgeTheme();
             const Textures = generateCardTextures({
@@ -691,6 +696,10 @@ export default function HangingIdBadge({
             const NextLanyardTex = generateLanyardTexture();
             FrontMat.map = Textures.frontTex;
             BackMat.map = Textures.backTex;
+            LightFrontMat.map = Textures.frontTex;
+            LightBackMat.map = Textures.backTex;
+            FrontMesh.material = NextTheme.isLight ? LightFrontMat : FrontMat;
+            BackMesh.material = NextTheme.isLight ? LightBackMat : BackMat;
             StrapMat.map = NextLanyardTex;
             RimMat.color.set(NextTheme.border2);
             FrontTex.dispose();
@@ -719,6 +728,8 @@ export default function HangingIdBadge({
         const RestPos = new Three.Vector3(0, 1.35, 0);
         const Pos = RestPos.clone();
         const Vel = new Three.Vector3(0, 0, 0);
+        let IsDropping = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        if (IsDropping) Pos.y = AnchorPos.y - 0.4;
 
         let RotX = 0;
         let RotY = 0;
@@ -751,6 +762,7 @@ export default function HangingIdBadge({
             const Intersects = Raycaster.intersectObjects([CardBodyMesh, FrontMesh, BackMesh, BuckleMesh], false);
             if (Intersects.length > 0) {
                 IsDragging = true;
+                IsDropping = false;
                 ActivePointerId = E.pointerId;
                 Renderer.domElement.style.cursor = 'grabbing';
                 DragPlane.setFromNormalAndCoplanarPoint(new Three.Vector3(0, 0, 1), Pos);
@@ -884,8 +896,13 @@ export default function HangingIdBadge({
             const Dt = Math.min((Now - LastTime) / 1000, 0.033);
             LastTime = Now;
 
-            // Spring-pendulum physics when not dragging
-            if (!IsDragging) {
+            if (IsDropping) {
+                // Let the badge free-fall until the strap takes up the slack.
+                const Gravity = 9.8;
+                Pos.y += Vel.y * Dt - 0.5 * Gravity * Dt * Dt;
+                Vel.y -= Gravity * Dt;
+                if (Pos.y <= RestPos.y) IsDropping = false;
+            } else if (!IsDragging) {
                 const Stiffness = 68;
                 const Damping = 5.4;
 
@@ -955,6 +972,8 @@ export default function HangingIdBadge({
             RimMat.dispose();
             FrontMat.dispose();
             BackMat.dispose();
+            LightFrontMat.dispose();
+            LightBackMat.dispose();
             MetalMat.dispose();
             StrapMat.dispose();
             Renderer.dispose();

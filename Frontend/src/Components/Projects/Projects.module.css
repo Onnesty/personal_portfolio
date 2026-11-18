@@ -59,7 +59,22 @@
 
     align-self: center;
 
+    padding: 0;
+    border: 0;
+    background: transparent;
     cursor: pointer;
+}
+
+.CarouselButton img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.CarouselButton:focus-visible {
+    outline: 2px solid var(--sky-2);
+    outline-offset: 3px;
 }
 
 .Track {
@@ -460,4 +475,53 @@
         opacity: 1;
         bottom: -52px;
     }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .Track, .ContentContainer {
+        transition: none;
+    }
+
+    .Track {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+.SpacedTrack {
+    --slide-gutter: 32px;
+
+    width: calc(100% + 2 * var(--slide-gutter));
+    margin-inline: calc(-1 * var(--slide-gutter));
+    padding-inline: var(--slide-gutter);
+    overflow-x: clip;
+    overflow-y: visible;
+}
+
+.SpacedTrack > .ContentContainer {
+    /* Include the gap in the slide width so the percentage translation includes it. */
+    width: calc(100% + 2 * var(--slide-gutter));
+    padding-inline-end: calc(2 * var(--slide-gutter));
+}
+
+.ControlsBelow {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 18px;
+}
+
+.ControlsBelow .CarouselButton {
+    position: static;
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border: 1px solid var(--surface-border);
+    border-radius: 50%;
+    background: var(--card-surface);
+}
+
+.ControlsBelow .CarouselButton img {
+    width: 24px;
+    height: 24px;
 }

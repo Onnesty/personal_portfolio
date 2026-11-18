@@ -1,3 +1,4 @@
+import Carousel from './Carousel';
 import styles from './Projects.module.css';
 import { useTheme } from '../../theme';
 import { useInView } from 'react-intersection-observer';
@@ -11,31 +12,11 @@ export default function Projects({ type: Type }: { type: string; }) {
 
     const Data = (Type === "Software") ? SoftwareProjectData() as ProjectDataStruct[] : EngineeringProjectData() as ProjectDataStruct[];
 
-    const Size = Data.length;
-
     const { ref: ScrollRef, inView: InView } = useInView({ // For Intersection Observer
         threshold: 0.3,
     });
 
     const [IsHover, ToggleIsHover] = useState(false);
-
-    const [CurrentIndex, ChangeCurrentIndex] = useState(0);
-
-    const HandleNext = () => {
-
-        const Index: number = (CurrentIndex + 1) % Size;
-
-        ChangeCurrentIndex(Index);
-
-    };
-
-    const HandlePrevious = () => {
-
-        const Index: number = (CurrentIndex - 1);
-
-        ChangeCurrentIndex(Index < 0 ? 0 : Index);
-
-    };
 
     return (
 
@@ -47,68 +28,58 @@ export default function Projects({ type: Type }: { type: string; }) {
 
             </h1>
 
-            <div className = {`${styles.Track} ${InView ? styles.Show : ""}`} >
+            <Carousel inView={InView} itemLabel="project" slides={Data.map(Item => ({
+                key: Item.id,
+                content: (
+                    <div className = {styles.CardContainer}
+                        onPointerEnter = {() => { ToggleIsHover(true); }} onPointerLeave = {() => { ToggleIsHover(false); }}
+                        onClick = {() => { window.open(Item.link, '_blank', 'noopener,noreferrer'); }}
+                    >
 
-                {Data.map((Item, Index) => (
+                        <img className = {styles.ProjectImage} src = {Item.projectImage} alt = {Item.title} />
 
-                    <div key = {Item.id} className = {styles.ContentContainer} style = {{ transform: `translateX(-${100 * CurrentIndex}%)` }}>
+                        <div className = {styles.InformationContainer}>
 
-                        <div className = {styles.CardContainer} key = {`${Item.id}_${Index}`}
-                            onPointerEnter = {() => { ToggleIsHover(true); }} onPointerLeave = {() => { ToggleIsHover(false); }}
-                            onClick = {() => { window.open(Item.link, '_blank', 'noopener,noreferrer'); }}
-                        >
+                            <h3 className = {styles.ProjectTitle}> {Item.title} </h3>
 
-                            <img className = {styles.ProjectImage} src = {Item.projectImage} alt = {Item.title} />
+                            <div className = {styles.TechnologiesContainer}>
 
-                            <div className = {styles.InformationContainer}>
+                                <div className = {styles.TechnologyTrack}>
 
-                                <h3 className = {styles.ProjectTitle}> {Item.title} </h3>
+                                    {Item.technologies.map((TechItem, TechIndex) => (
 
-                                <div className = {styles.TechnologiesContainer}>
+                                        <div className = {styles.Technology} key = {`${Item.id}_${TechIndex}`}>
+                                            <img className = {styles.TechnologyImage} src = {TechItem.Image} alt = {TechItem.Name} />
+                                            <h4 className = {styles.TechnologyName}> {TechItem.Name} </h4>
+                                        </div>
 
-                                    <div className = {styles.TechnologyTrack}>
-
-                                        {Item.technologies.map((TechItem, TechIndex) => (
-
-                                            <div className = {styles.Technology} key = {`${Item.id}_${Index}_${TechIndex}`}>
-                                                <img className = {styles.TechnologyImage} src = {TechItem.Image} alt = {TechItem.Name} />
-                                                <h4 className = {styles.TechnologyName}> {TechItem.Name} </h4>
-                                            </div>
-
-                                        ))}
-
-                                    </div>
+                                    ))}
 
                                 </div>
 
-                                <p className = {styles.ProjectDecription}>
-
-                                    {Item.description}
-
-                                </p>
-
                             </div>
 
-                            <div className = {`${styles.LinkButton} ${IsHover ? styles.Show : ""}`} >
+                            <p className = {styles.ProjectDecription}>
 
-                                <img className = {styles.LinkImage} src = {CurrentTheme === 'light' ? "/Assets/GitHubLight.svg" : "/Assets/GitHub.svg"} alt = "GitHub" />
+                                {Item.description}
 
-                                <h6 className = {styles.LinkMessage}>
-                                    Visit on GitHub
-                                </h6>
-
-                            </div>
+                            </p>
 
                         </div>
+
+                        <div className = {`${styles.LinkButton} ${IsHover ? styles.Show : ""}`} >
+
+                            <img className = {styles.LinkImage} src = {CurrentTheme === 'light' ? "/Assets/GitHubLight.svg" : "/Assets/GitHub.svg"} alt = "GitHub" />
+
+                            <h6 className = {styles.LinkMessage}>
+                                Visit on GitHub
+                            </h6>
+
+                        </div>
+
                     </div>
-
-                ))}
-
-                <img className = {styles.CarouselButton} style = {{ left: "5%" }} src = {CurrentTheme === 'light' ? "/Assets/BackLight.png" : "/Assets/Back.png"} alt = "Previous" onClick = {HandlePrevious} />
-
-                <img className = {styles.CarouselButton} style = {{ right: "5%" }} src = {CurrentTheme === 'light' ? "/Assets/NextLight.png" : "/Assets/Next.png"} alt = "Next" onClick = {HandleNext} />
-
-            </div>
+                ),
+            }))} />
 
         </div>
     );

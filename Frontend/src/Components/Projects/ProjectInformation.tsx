@@ -83,7 +83,7 @@ export function EngineeringProjectData(): ProjectDataStruct[] {
             {
                 id: 1,
 
-                title: "Smart Wall Adapter",
+                title: "Smart Plug",
 
                 projectImage: "/EngineeringProjects/SmartPlug.JPG",
 

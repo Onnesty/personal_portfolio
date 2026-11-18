@@ -62,151 +62,25 @@
     transform: translateY(0);
 }
 
-.Viewport {
-
-    overflow: hidden;
-
-    opacity: 0;
-    transform: translateY(-20%);
-    transition: opacity 1s ease-in-out, transform 1s ease-in-out;
-
-    border: 1px solid var(--surface-border);
-    border-radius: 24px;
-
-    background: var(--card-surface);
-}
-
-.Viewport.Show {
-
-    opacity: 1;
-    transform: translateY(0);
-}
-
-.Track {
-
-    display: flex;
-    transition: transform 0.45s ease;
-}
-
-.Slide {
-
-    flex: 0 0 100%;
-    min-width: 0;
+.Carousel .ActivityCard {
+    width: 100%;
     margin: 0;
     padding: clamp(12px, 2vw, 20px);
-
-    display: flex;
-    flex-direction: column;
     gap: 16px;
-}
-
-.SlideImage {
-
-    display: block;
-    width: 100%;
-    aspect-ratio: 4 / 3;
-    flex-shrink: 0;
-
-    border-radius: 16px;
-    object-fit: cover;
-    background: var(--background-2);
-}
-
-.SlideTitle {
-
-    width: 100%;
-    font-family: var(--title-font);
-    font-size: clamp(0.95rem, 1.2vw, 1.125rem);
-    font-weight: 500;
-    line-height: 1.5;
-    text-align: center;
-    overflow-wrap: anywhere;
-    color: var(--generaltext-color);
-}
-
-.Controls {
-
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-
-    margin-top: 18px;
-}
-
-.CarouselButton, .DotButton {
-
-    min-width: 44px;
-    min-height: 44px;
-
-    border-radius: 50%;
-    border: 1px solid var(--surface-border);
-
-    background: var(--card-surface);
-
-    color: var(--sky-2);
-    font-size: 1.2rem;
-
     cursor: pointer;
 }
 
-.CarouselButton {
-
-    display: grid;
-    place-items: center;
-
-    width: 44px;
-    height: 44px;
-    flex-shrink: 0;
-    padding: 0;
+.ActivityCard .ActivityImage {
+    aspect-ratio: 4 / 3;
 }
 
-.CarouselImage {
-
-    display: block;
-    width: 24px;
-    height: 24px;
-    object-fit: contain;
-    object-position: center;
-}
-
-.CarouselButton:focus-visible, .DotButton:focus-visible {
-
-    outline: 2px solid var(--sky-2);
-    outline-offset: 3px;
-}
-
-.Dots {
-
-    display: flex;
-    gap: 4px;
-}
-
-.DotButton {
-
-    background: transparent;
-    border: 0;
-
-    position: relative;
-}
-
-.DotButton::after {
-
-    content: '';
-
-    position: absolute;
-    inset: 0;
-    margin: auto;
-
-    width: 7px;
-    height: 7px;
-
-    border-radius: 50%;
-    background: var(--text3);
-}
-
-.DotButton[aria-current]::after {
-
-    background: var(--sky-2);
+.ActivityCard .ActivityCaption {
+    width: 100%;
+    margin: 0;
+    font-size: clamp(0.95rem, 1.2vw, 1.125rem);
+    font-weight: 500;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
 }
 
 @media (max-width: 760px) {
@@ -230,12 +104,9 @@
 
 @media (prefers-reduced-motion: reduce) {
 
-    .Track, .AnimatedContent, .Viewport {
+    .AnimatedContent {
 
         transition: none;
-    }
-
-    .AnimatedContent, .Viewport {
 
         opacity: 1;
         transform: none;

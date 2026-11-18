@@ -1,33 +1,15 @@
 import styles from './About.module.css';
-import { useTheme } from '../../theme';
-import { useState } from 'react';
+import Carousel from '../Projects/Carousel';
+import projectStyles from '../Projects/Projects.module.css';
 import { useInView } from 'react-intersection-observer';
 
 import { Events } from './Events';
 
 export default function About() {
 
-    const CurrentTheme = useTheme();
-
     const { ref: ScrollRef, inView: InView } = useInView({ threshold: 0.1 });
     const { ref: CarouselRef, inView: CarouselInView } = useInView({ threshold: 0.3 });
     const TitleAnimation = InView ? 'animate__animated animate__fadeInDown' : 'animate__animated animate__fadeOutUp';
-
-    const [CurrentIndex, ChangeCurrentIndex] = useState(0);
-    
-    const EventsObj = Events();
-
-    const SlideCount = EventsObj.length;
-
-    const HandleNext = () => {
-        if (SlideCount < 2) return;
-        ChangeCurrentIndex(Index => (Index + 1) % SlideCount);
-    };
-
-    const HandlePrevious = () => {
-        if (SlideCount < 2) return;
-        ChangeCurrentIndex(Index => (Index - 1 + SlideCount) % SlideCount);
-    };
 
     return (
 
@@ -57,58 +39,15 @@ export default function About() {
 
                     <h2 id = "activity-title" className = {`${styles.Title} ${TitleAnimation}`}> What I've been up to </h2>
 
-                    <div className = {`${styles.Viewport} ${CarouselInView ? styles.Show : ''}`}>
-
-                        <div className = {styles.Track} style = {{ transform: `translateX(-${CurrentIndex * 100}%)` }}>
-
-                            {EventsObj.map((Item, Index) => (
-
-                                <figure
-                                    className = {styles.Slide}
-                                    key = {Item.Name}
-                                    aria-roledescription = "slide"
-                                    aria-label = {`${Index + 1} of ${SlideCount}`}
-                                    aria-hidden = {Index !== CurrentIndex}
-                                >
-                                    <img className = {styles.SlideImage} src = {Item.Img} alt = {Item.ImgAlt} />
-
-                                    <figcaption className = {styles.SlideTitle}>
-                                        {Item.Name}
-                                    </figcaption>
-                                </figure>
-
-                            ))}
-
-                        </div>
-
-                    </div>
-
-                    <div className = {`${styles.Controls} ${styles.AnimatedContent} ${CarouselInView ? styles.Show : ''}`}>
-
-                        <button type = "button" className = {styles.CarouselButton}
-                            onClick = {HandlePrevious} aria-label = "Previous activity">
-                            <img src = {CurrentTheme === 'light' ? "/Assets/BackLight.png" : "/Assets/Back.png"} className = {styles.CarouselImage} alt = "" />
-                        </button>
-
-                        <div className = {styles.Dots}>
-
-                            {Array.from({ length: SlideCount }, (_, Index) => (
-
-                                <button type = "button" className = {styles.DotButton} key = {Index}
-                                    onClick = {() => ChangeCurrentIndex(Index)}
-                                    aria-label = {`Show activity ${Index + 1}`}
-                                    aria-current = {CurrentIndex === Index ? 'true' : undefined} />
-
-                            ))}
-
-                        </div>
-
-                        <button type = "button" className = {styles.CarouselButton}
-                            onClick = {HandleNext} aria-label = "Next activity">
-                            <img src = {CurrentTheme === 'light' ? "/Assets/NextLight.png" : "/Assets/Next.png"} className = {styles.CarouselImage} alt = "" />
-                        </button>
-
-                    </div>
+                    <Carousel inView={CarouselInView} itemLabel="activity" controlsBelow slides={Events().map(event => ({
+                        key: event.Name,
+                        content: (
+                            <figure className={`${projectStyles.CardContainer} ${styles.ActivityCard}`} onClick = {() => window.open(event.Link)}>
+                                <img className={`${projectStyles.ProjectImage} ${styles.ActivityImage}`} src={event.Img} alt={event.ImgAlt} />
+                                <figcaption className={`${projectStyles.ProjectTitle} ${styles.ActivityCaption}`}>{event.Name}</figcaption>
+                            </figure>
+                        ),
+                    }))} />
 
                 </section>
 
